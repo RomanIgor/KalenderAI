@@ -21,6 +21,37 @@
     --text: #f0f0ff;
     --muted: #8888aa;
   }
+  :root.light {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface2: #f0ede8;
+    --border: #ddd8d0;
+    --accent: #f55036;
+    --accent2: #ff6b6b;
+    --accent3: #1a9e5c;
+    --text: #1a1a2e;
+    --muted: #888899;
+  }
+  body { transition: background .3s, color .3s; }
+  :root.light body::before {
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(245,80,54,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(26,158,92,0.05) 0%, transparent 50%);
+  }
+  .theme-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 12px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all .2s;
+    display: flex; align-items: center; gap: 6px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px; font-weight: 500;
+  }
+  .theme-btn:hover { transform: scale(1.05); }
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
     background: var(--bg);
@@ -322,7 +353,12 @@
 <div class="wrapper">
   <header>
     <div class="logo">🗓 KalenderAI</div>
-    <div class="badge"><div class="dot"></div>Groq · Kostenlos</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">
+        <span id="theme-icon">☀️</span><span id="theme-label">Hell</span>
+      </button>
+      <div class="badge"><div class="dot"></div>Groq</div>
+    </div>
   </header>
 
   <!-- Setup Guide -->
@@ -452,6 +488,31 @@ if (apiKey) {
   document.getElementById('key-input').value = apiKey;
   document.getElementById('saved-msg').style.display = 'block';
   document.getElementById('setup-card').style.display = 'none';
+}
+
+// Theme
+const savedTheme = localStorage.getItem('kalenderai_theme') || 'dark';
+if (savedTheme === 'light') applyTheme('light');
+
+function applyTheme(t) {
+  if (t === 'light') {
+    document.documentElement.classList.add('light');
+    document.getElementById('theme-icon').textContent = '🌙';
+    document.getElementById('theme-label').textContent = 'Dunkel';
+    document.querySelector('meta[name=theme-color]').setAttribute('content','#f5f4f0');
+  } else {
+    document.documentElement.classList.remove('light');
+    document.getElementById('theme-icon').textContent = '☀️';
+    document.getElementById('theme-label').textContent = 'Hell';
+    document.querySelector('meta[name=theme-color]').setAttribute('content','#0a0a0f');
+  }
+}
+
+function toggleTheme() {
+  const isLight = document.documentElement.classList.contains('light');
+  const next = isLight ? 'dark' : 'light';
+  localStorage.setItem('kalenderai_theme', next);
+  applyTheme(next);
 }
 
 function saveKey() {
