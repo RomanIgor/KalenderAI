@@ -486,40 +486,25 @@ function onPhoto(e) {
   r.readAsDataURL(f);
 }
 
-function toggleVoice() {
-  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-    toast('❌ Bitte Chrome für Spracherkennung verwenden', true); return;
-  }
-  if (isRec) { recog && recog.stop(); return; }
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recog = new SR();
-  recog.lang = 'de-DE';
-  recog.continuous = true;
-  recog.interimResults = true;
-  recog.onstart = () => {
-    isRec = true; speech = '';
-    document.getElementById('mic').classList.add('rec');
-    document.getElementById('mic').textContent = '⏹️';
-    document.getElementById('v-hint').textContent = '🔴 Sprechen... erneut tippen zum Stoppen';
-    const t = document.getElementById('v-text');
-    t.style.display = 'block'; t.textContent = '';
+async function toggleVoice() {
+  
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  mediaRecorder = new MediaRecorder(stream);
+  
+  
+  mediaRecorder.onstop = async () => {
+    const blob = new Blob(audioChunks);
+    const formData = new FormData();
+    formData.append('file', blob, 'audio.webm');
+    formData.append('model', 'whisper-large-v3'); // ← modelul nou
+    formData.append('language', 'de');
+    
+    
+    const resp = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', ...);
+    speech = await resp.text(); // ← text precis
   };
-  recog.onresult = e => {
-    let fin = '', int = '';
-    for (let i = e.resultIndex; i < e.results.length; i++) {
-      const tx = e.results[i][0].transcript;
-      if (e.results[i].isFinal) fin += tx; else int += tx;
-    }
-    speech += fin;
-    document.getElementById('v-text').textContent = speech + int;
-  };
-  recog.onend = () => {
-    isRec = false;
-    document.getElementById('mic').classList.remove('rec');
-    document.getElementById('mic').textContent = '🎙️';
-    document.getElementById('v-hint').textContent = speech ? '✓ Aufnahme abgeschlossen' : 'Tippen zum Aufnehmen';
-  };
-  recog.start();
+  
+  mediaRecorder.start(); // ← înregistrează
 }
 
 async function analyze() {
