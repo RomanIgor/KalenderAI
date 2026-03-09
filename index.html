@@ -1,9 +1,13 @@
 <!DOCTYPE html>
-<html lang="ro">
+<html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>CalendarAI – Gratuit cu Groq</title>
+<meta name="theme-color" content="#0a0a0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Termine automatisch per Text, Foto oder Sprache in Google Kalender eintragen">
+<title>KalenderAI – Termine automatisch eintragen</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -61,7 +65,6 @@
   }
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.8)}}
 
-  /* Setup */
   .setup-card {
     background:linear-gradient(135deg,rgba(245,80,54,0.1),rgba(255,179,71,0.07));
     border:1px solid rgba(245,80,54,0.2);
@@ -85,7 +88,6 @@
   .setup-card a { color:var(--accent); font-weight:600; text-decoration:none; }
   .setup-card strong { color:var(--text); }
 
-  /* API Key */
   .api-box {
     background:var(--surface); border:1px solid var(--border);
     border-radius:16px; padding:16px; margin-bottom:20px;
@@ -112,7 +114,6 @@
   .btn-save:hover { background:#ff6b52; }
   .saved-msg { font-size:12px; color:var(--accent3); margin-top:7px; display:none; }
 
-  /* Tabs */
   .tabs { display:flex; gap:8px; margin-bottom:16px; }
   .tab {
     flex:1; background:var(--surface); border:1px solid var(--border);
@@ -127,7 +128,6 @@
     background:rgba(245,80,54,0.1); border-color:var(--accent); color:var(--text);
   }
 
-  /* Panels */
   .panel {
     background:var(--surface); border:1px solid var(--border);
     border-radius:20px; padding:20px; margin-bottom:16px;
@@ -148,7 +148,6 @@
   textarea:focus { border-color:var(--accent); }
   textarea::placeholder { color:var(--muted); }
 
-  /* Photo */
   .drop-zone {
     border:2px dashed var(--border); border-radius:14px;
     padding:28px 20px; text-align:center; cursor:pointer;
@@ -162,7 +161,6 @@
   .drop-zone .ds { font-size:12px; color:#555566; margin-top:4px; }
   #prev { width:100%; border-radius:10px; margin-top:12px; max-height:200px; object-fit:cover; display:none; }
 
-  /* Voice */
   .voice-wrap { display:flex; flex-direction:column; align-items:center; gap:16px; }
   .mic-btn {
     width:80px; height:80px; border-radius:50%;
@@ -184,7 +182,6 @@
     min-height:60px; line-height:1.6; display:none;
   }
 
-  /* Main button */
   .btn-main {
     width:100%; background:linear-gradient(135deg,var(--accent),#ffb347);
     border:none; border-radius:14px; padding:16px;
@@ -197,7 +194,6 @@
   .btn-main:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(245,80,54,0.45); }
   .btn-main:disabled { opacity:.5; cursor:not-allowed; transform:none; }
 
-  /* Loading */
   .loader { height:3px; background:var(--surface2); border-radius:2px; overflow:hidden; margin:12px 0; display:none; }
   .loader.on { display:block; }
   .loader-bar {
@@ -207,7 +203,6 @@
   }
   @keyframes sh{0%{background-position:0%}100%{background-position:200%}}
 
-  /* Results */
   .results { margin-top:22px; }
   .res-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
   .res-title { font-family:'Syne',sans-serif; font-size:16px; font-weight:700; }
@@ -266,7 +261,6 @@
   .btn-cal:hover { transform:translateY(-1px); }
   .btn-cal.done { background:linear-gradient(135deg,rgba(67,233,123,.8),rgba(56,239,125,.8)); }
 
-  /* Modal */
   .overlay {
     position:fixed; inset:0; background:rgba(0,0,0,.8);
     backdrop-filter:blur(8px); z-index:100;
@@ -307,7 +301,6 @@
   }
   .btn-ok:hover { transform:translateY(-1px); }
 
-  /* Toast */
   .toast {
     position:fixed; bottom:24px; left:50%;
     transform:translateX(-50%) translateY(100px);
@@ -320,10 +313,7 @@
   .toast.show { transform:translateX(-50%) translateY(0); }
   .toast.err { border-color:var(--accent2); color:var(--accent2); }
 
-  .empty {
-    text-align:center; padding:30px 20px;
-    color:var(--muted); font-size:14px;
-  }
+  .empty { text-align:center; padding:30px 20px; color:var(--muted); font-size:14px; }
   .empty .ei { font-size:40px; margin-bottom:12px; opacity:.5; }
 </style>
 </head>
@@ -331,75 +321,75 @@
 
 <div class="wrapper">
   <header>
-    <div class="logo">🗓 CalendarAI</div>
-    <div class="badge"><div class="dot"></div>Groq · Gratuit</div>
+    <div class="logo">🗓 KalenderAI</div>
+    <div class="badge"><div class="dot"></div>Groq · Kostenlos</div>
   </header>
 
-  <!-- Setup -->
+  <!-- Setup Guide -->
   <div class="setup-card" id="setup-card">
-    <h3>⚡ Configurare rapidă — Groq API (gratuit)</h3>
+    <h3>⚡ Einrichtung — Groq API (kostenlos)</h3>
     <div class="step">
       <div class="sn">1</div>
-      <div>Mergi la <a href="https://console.groq.com" target="_blank">console.groq.com</a> și creează un cont gratuit</div>
+      <div>Gehe zu <a href="https://console.groq.com" target="_blank">console.groq.com</a> und erstelle ein kostenloses Konto</div>
     </div>
     <div class="step">
       <div class="sn">2</div>
-      <div>În meniu stânga → <strong>"API Keys"</strong> → <strong>"Create API Key"</strong></div>
+      <div>Im linken Menü → <strong>„API Keys"</strong> → <strong>„Create API Key"</strong></div>
     </div>
     <div class="step">
       <div class="sn">3</div>
-      <div>Copiază cheia (începe cu <strong>gsk_...</strong>) și lipește mai jos</div>
+      <div>Kopiere den Schlüssel (beginnt mit <strong>gsk_...</strong>) und füge ihn unten ein</div>
     </div>
   </div>
 
   <!-- API Key -->
   <div class="api-box">
-    <label>🔑 Cheie API Groq (gratuită)</label>
+    <label>🔑 Groq API-Schlüssel (kostenlos)</label>
     <div class="api-row">
       <input type="password" id="key-input" placeholder="gsk_..." />
-      <button class="btn-save" onclick="saveKey()">Salvează</button>
+      <button class="btn-save" onclick="saveKey()">Speichern</button>
     </div>
-    <div class="saved-msg" id="saved-msg">✅ Cheie salvată! Aplicația este gata.</div>
+    <div class="saved-msg" id="saved-msg">✅ Schlüssel gespeichert! Die App ist bereit.</div>
   </div>
 
-  <!-- Mode Tabs -->
+  <!-- Tabs -->
   <div class="tabs">
     <button class="tab active" onclick="setMode('text')" id="tab-text">
       <span class="icon">✏️</span>Text
     </button>
     <button class="tab" onclick="setMode('photo')" id="tab-photo">
-      <span class="icon">📷</span>Poză
+      <span class="icon">📷</span>Foto
     </button>
     <button class="tab" onclick="setMode('voice')" id="tab-voice">
-      <span class="icon">🎙️</span>Voce
+      <span class="icon">🎙️</span>Sprache
     </button>
   </div>
 
   <!-- Text Panel -->
   <div class="panel" id="panel-text">
-    <div class="panel-title">Descrie evenimentul</div>
+    <div class="panel-title">Termin beschreiben</div>
     <textarea id="txt" rows="4"
-      placeholder="Ex: Întâlnire cu echipa joi 15 mai la 14:00 în sala de conferințe&#10;Dentist vineri la 10:30, dr. Popescu&#10;Zbor spre București luni la 8:15"></textarea>
+      placeholder="z.B. Teammeeting Donnerstag 15. Mai um 14:00 Uhr im Konferenzraum&#10;&#10;Zahnarzt Freitag um 10:30 Uhr, Dr. Müller&#10;&#10;Flug nach Berlin Montag früh um 8:15 Uhr"></textarea>
   </div>
 
   <!-- Photo Panel -->
   <div class="panel" id="panel-photo" style="display:none;">
-    <div class="panel-title">Fotografiază sau încarcă o imagine</div>
+    <div class="panel-title">Foto aufnehmen oder hochladen</div>
     <div class="drop-zone">
       <input type="file" accept="image/*" capture="environment" onchange="onPhoto(event)">
       <div class="di">📸</div>
-      <div class="dt">Apasă pentru a fotografia sau alege o imagine</div>
-      <div class="ds">Invitații, bilete, SMS-uri, note — orice cu o dată</div>
-      <img id="prev" src="" alt="Preview">
+      <div class="dt">Tippen zum Fotografieren oder Bild auswählen</div>
+      <div class="ds">Einladungen, Tickets, SMS, Notizen — alles mit einem Datum</div>
+      <img id="prev" src="" alt="Vorschau">
     </div>
   </div>
 
   <!-- Voice Panel -->
   <div class="panel" id="panel-voice" style="display:none;">
-    <div class="panel-title">Spune evenimentul cu voce</div>
+    <div class="panel-title">Termin per Sprache eingeben</div>
     <div class="voice-wrap">
       <button class="mic-btn" id="mic" onclick="toggleVoice()">🎙️</button>
-      <div class="voice-hint" id="v-hint">Apasă pentru a înregistra</div>
+      <div class="voice-hint" id="v-hint">Tippen zum Aufnehmen</div>
       <div class="transcript" id="v-text"></div>
     </div>
   </div>
@@ -409,38 +399,38 @@
 
   <!-- Main Button -->
   <button class="btn-main" id="btn-main" onclick="analyze()">
-    <span>✨</span> Extrage evenimentele cu AI
+    <span>✨</span> Termine mit KI erkennen
   </button>
 
   <!-- Results -->
   <div class="results" id="results" style="display:none;">
     <div class="res-header">
-      <div class="res-title">📋 Evenimente detectate</div>
+      <div class="res-title">📋 Erkannte Termine</div>
       <div class="count" id="count">0</div>
     </div>
-    <button class="btn-all" onclick="addAll()">➕ Adaugă toate în Google Calendar</button>
+    <button class="btn-all" onclick="addAll()">➕ Alle zu Google Kalender hinzufügen</button>
     <div id="ev-list"></div>
   </div>
 
   <div class="empty" id="empty" style="display:none;">
     <div class="ei">🔍</div>
-    <div>Nu am găsit niciun eveniment.<br>Încearcă să fii mai specific cu data și ora.</div>
+    <div>Keine Termine gefunden.<br>Versuche es mit genaueren Datum- und Uhrzeitangaben.</div>
   </div>
 </div>
 
-<!-- Modal -->
+<!-- Edit Modal -->
 <div class="overlay" id="overlay" onclick="closeModal(event)">
   <div class="modal">
-    <h3>✏️ Editează evenimentul</h3>
-    <div class="fg"><label class="fl">Titlu</label><input type="text" class="fi" id="e-title"></div>
-    <div class="fg"><label class="fl">Dată</label><input type="date" class="fi" id="e-date"></div>
-    <div class="fg"><label class="fl">Ora început</label><input type="time" class="fi" id="e-start"></div>
-    <div class="fg"><label class="fl">Ora sfârșit</label><input type="time" class="fi" id="e-end"></div>
-    <div class="fg"><label class="fl">Locație</label><input type="text" class="fi" id="e-loc" placeholder="opțional"></div>
-    <div class="fg"><label class="fl">Descriere</label><input type="text" class="fi" id="e-desc" placeholder="opțional"></div>
+    <h3>✏️ Termin bearbeiten</h3>
+    <div class="fg"><label class="fl">Titel</label><input type="text" class="fi" id="e-title"></div>
+    <div class="fg"><label class="fl">Datum</label><input type="date" class="fi" id="e-date"></div>
+    <div class="fg"><label class="fl">Startzeit</label><input type="time" class="fi" id="e-start"></div>
+    <div class="fg"><label class="fl">Endzeit</label><input type="time" class="fi" id="e-end"></div>
+    <div class="fg"><label class="fl">Ort</label><input type="text" class="fi" id="e-loc" placeholder="optional"></div>
+    <div class="fg"><label class="fl">Beschreibung</label><input type="text" class="fi" id="e-desc" placeholder="optional"></div>
     <div class="m-actions">
-      <button class="btn-cancel" onclick="closeModal()">Anulează</button>
-      <button class="btn-ok" onclick="saveEdit()">💾 Salvează</button>
+      <button class="btn-cancel" onclick="closeModal()">Abbrechen</button>
+      <button class="btn-ok" onclick="saveEdit()">💾 Speichern</button>
     </div>
   </div>
 </div>
@@ -448,7 +438,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-let apiKey = localStorage.getItem('calai_groq') || '';
+let apiKey = localStorage.getItem('kalenderai_groq') || '';
 let mode = 'text';
 let events = [];
 let editIdx = null;
@@ -467,13 +457,13 @@ if (apiKey) {
 function saveKey() {
   const v = document.getElementById('key-input').value.trim();
   if (!v || !v.startsWith('gsk_')) {
-    toast('❌ Cheia trebuie să înceapă cu gsk_...', true); return;
+    toast('❌ Der Schlüssel muss mit gsk_... beginnen', true); return;
   }
   apiKey = v;
-  localStorage.setItem('calai_groq', v);
+  localStorage.setItem('kalenderai_groq', v);
   document.getElementById('saved-msg').style.display = 'block';
   document.getElementById('setup-card').style.display = 'none';
-  toast('✅ Cheie Groq salvată!');
+  toast('✅ Groq API-Schlüssel gespeichert!');
 }
 
 function setMode(m) {
@@ -498,17 +488,19 @@ function onPhoto(e) {
 
 function toggleVoice() {
   if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-    toast('❌ Încearcă în Chrome pentru recunoaștere vocală', true); return;
+    toast('❌ Bitte Chrome für Spracherkennung verwenden', true); return;
   }
   if (isRec) { recog && recog.stop(); return; }
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   recog = new SR();
-  recog.lang = 'ro-RO'; recog.continuous = true; recog.interimResults = true;
+  recog.lang = 'de-DE';
+  recog.continuous = true;
+  recog.interimResults = true;
   recog.onstart = () => {
     isRec = true; speech = '';
     document.getElementById('mic').classList.add('rec');
     document.getElementById('mic').textContent = '⏹️';
-    document.getElementById('v-hint').textContent = '🔴 Vorbește... apasă din nou pentru a opri';
+    document.getElementById('v-hint').textContent = '🔴 Sprechen... erneut tippen zum Stoppen';
     const t = document.getElementById('v-text');
     t.style.display = 'block'; t.textContent = '';
   };
@@ -525,46 +517,45 @@ function toggleVoice() {
     isRec = false;
     document.getElementById('mic').classList.remove('rec');
     document.getElementById('mic').textContent = '🎙️';
-    document.getElementById('v-hint').textContent = speech ? '✓ Finalizat' : 'Apasă pentru a înregistra';
+    document.getElementById('v-hint').textContent = speech ? '✓ Aufnahme abgeschlossen' : 'Tippen zum Aufnehmen';
   };
   recog.start();
 }
 
 async function analyze() {
-  if (!apiKey) { toast('❌ Introdu mai întâi cheia API Groq!', true); return; }
+  if (!apiKey) { toast('❌ Bitte zuerst den Groq API-Schlüssel eingeben!', true); return; }
 
-  const today = new Date().toLocaleDateString('ro-RO', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const today = new Date().toLocaleDateString('de-DE', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
   const todayISO = new Date().toISOString().split('T')[0];
 
-  const sysPrompt = `Ești un asistent care extrage evenimente din text/imagini și returnează DOAR JSON valid, fără text suplimentar, fără backticks. Data de azi: ${today} (${todayISO}).
-Format exact:
-{"events":[{"title":"string","date":"YYYY-MM-DD","startTime":"HH:MM","endTime":"HH:MM","location":"string sau gol","description":"string sau gol","confidence":90}]}
-Reguli: fără oră → 09:00/10:00. Data relativă (mâine, joi) → calculează față de azi. confidence 0-100.`;
+  const sysPrompt = `Du bist ein Assistent, der Termine aus Text oder Bildern extrahiert und NUR gültiges JSON zurückgibt, ohne zusätzlichen Text oder Backticks. Heutiges Datum: ${today} (${todayISO}).
+Exaktes Format:
+{"events":[{"title":"string","date":"YYYY-MM-DD","startTime":"HH:MM","endTime":"HH:MM","location":"string oder leer","description":"string oder leer","confidence":90}]}
+Regeln: Keine Uhrzeit angegeben → 09:00/10:00. Relative Datumsangaben (morgen, Freitag) → relativ zu heute berechnen. confidence 0-100.`;
 
   let messages;
 
   if (mode === 'text') {
     const txt = document.getElementById('txt').value.trim();
-    if (!txt) { toast('❌ Introdu un text!', true); return; }
-    messages = [{role:'user', content: `Extrage evenimentele din: "${txt}"`}];
+    if (!txt) { toast('❌ Bitte Text eingeben!', true); return; }
+    messages = [{role:'user', content:`Extrahiere alle Termine aus folgendem Text: "${txt}"`}];
   } else if (mode === 'photo') {
-    if (!photoB64) { toast('❌ Încarcă o imagine!', true); return; }
+    if (!photoB64) { toast('❌ Bitte zuerst ein Bild hochladen!', true); return; }
     messages = [{
-      role: 'user',
+      role:'user',
       content: [
-        {type:'text', text:'Analizează imaginea și extrage toate evenimentele, datele și programările găsite.'},
+        {type:'text', text:'Analysiere das Bild und extrahiere alle Termine, Verabredungen und Fristen.'},
         {type:'image_url', image_url:{url:`data:${photoMime};base64,${photoB64}`}}
       ]
     }];
   } else {
     const tr = document.getElementById('v-text').textContent || speech;
-    if (!tr.trim()) { toast('❌ Înregistrează mai întâi vocea!', true); return; }
-    messages = [{role:'user', content:`Extrage evenimentele din transcrierea vocală: "${tr}"`}];
+    if (!tr.trim()) { toast('❌ Bitte zuerst Sprache aufnehmen!', true); return; }
+    messages = [{role:'user', content:`Extrahiere alle Termine aus dieser Sprachtranskription: "${tr}"`}];
   }
 
   setLoading(true);
   try {
-    // Use vision model for photos, fast model for text/voice
     const model = mode === 'photo'
       ? 'meta-llama/llama-4-scout-17b-16e-instruct'
       : 'llama-3.3-70b-versatile';
@@ -588,20 +579,20 @@ Reguli: fără oră → 09:00/10:00. Data relativă (mâine, joi) → calculeaz�
     if (data.error) throw new Error(data.error.message);
 
     const raw = data.choices?.[0]?.message?.content || '';
-    const clean = raw.replace(/```json|```/g, '').trim();
+    const clean = raw.replace(/```json|```/g,'').trim();
 
     let parsed;
     try { parsed = JSON.parse(clean); }
     catch {
       const m = clean.match(/\{[\s\S]*\}/);
       if (m) parsed = JSON.parse(m[0]);
-      else throw new Error('Format răspuns invalid. Încearcă din nou.');
+      else throw new Error('Ungültiges Antwortformat. Bitte erneut versuchen.');
     }
 
     events = parsed.events || [];
     showEvents();
   } catch(err) {
-    toast('❌ ' + (err.message || 'Eroare necunoscută'), true);
+    toast('❌ ' + (err.message || 'Unbekannter Fehler'), true);
     console.error(err);
   } finally {
     setLoading(false);
@@ -612,7 +603,7 @@ function setLoading(on) {
   document.getElementById('loader').classList.toggle('on', on);
   const b = document.getElementById('btn-main');
   b.disabled = on;
-  b.innerHTML = on ? '<span>⏳</span> Se analizează...' : '<span>✨</span> Extrage evenimentele cu AI';
+  b.innerHTML = on ? '<span>⏳</span> KI analysiert...' : '<span>✨</span> Termine mit KI erkennen';
 }
 
 function showEvents() {
@@ -620,10 +611,10 @@ function showEvents() {
   const emp = document.getElementById('empty');
   const list = document.getElementById('ev-list');
   if (!events.length) {
-    res.style.display = 'none'; emp.style.display = 'block'; return;
+    res.style.display='none'; emp.style.display='block'; return;
   }
-  emp.style.display = 'none'; res.style.display = 'block';
-  document.getElementById('count').textContent = `${events.length} găsite`;
+  emp.style.display='none'; res.style.display='block';
+  document.getElementById('count').textContent = `${events.length} gefunden`;
   list.innerHTML = events.map((ev,i) => `
     <div class="ev-card" id="ec-${i}">
       <div class="ev-top">
@@ -637,8 +628,8 @@ function showEvents() {
       </div>
       ${ev.description?`<div style="font-size:13px;color:var(--muted);margin-bottom:10px;">${ev.description}</div>`:''}
       <div class="ev-actions">
-        <button class="btn-edit" onclick="openEdit(${i})">✏️ Editează</button>
-        <button class="btn-cal" id="cb-${i}" onclick="addOne(${i})">📅 Adaugă în Calendar</button>
+        <button class="btn-edit" onclick="openEdit(${i})">✏️ Bearbeiten</button>
+        <button class="btn-cal" id="cb-${i}" onclick="addOne(${i})">📅 Zu Kalender</button>
       </div>
     </div>`).join('');
 }
@@ -646,7 +637,7 @@ function showEvents() {
 function fmtDate(d) {
   if (!d) return '?';
   try {
-    return new Date(d+'T12:00:00').toLocaleDateString('ro-RO',{day:'numeric',month:'short',year:'numeric'});
+    return new Date(d+'T12:00:00').toLocaleDateString('de-DE',{day:'numeric',month:'short',year:'numeric'});
   } catch { return d; }
 }
 
@@ -655,7 +646,7 @@ function buildURL(ev) {
   const s = (ev.startTime||'09:00').replace(':','')+'00';
   const e = (ev.endTime||'10:00').replace(':','')+'00';
   const p = new URLSearchParams({
-    action:'TEMPLATE', text:ev.title||'Eveniment',
+    action:'TEMPLATE', text:ev.title||'Termin',
     dates:`${ds}T${s}/${ds}T${e}`,
     location:ev.location||'', details:ev.description||''
   });
@@ -663,29 +654,29 @@ function buildURL(ev) {
 }
 
 function addOne(i) {
-  window.open(buildURL(events[i]), '_blank');
+  window.open(buildURL(events[i]),'_blank');
   const b = document.getElementById(`cb-${i}`);
-  b.classList.add('done'); b.textContent = '✅ Deschis!';
-  toast('📅 Google Calendar deschis — confirmă evenimentul!');
+  b.classList.add('done'); b.textContent = '✅ Geöffnet!';
+  toast('📅 Google Kalender geöffnet — Termin bestätigen!');
 }
 
 function addAll() {
   events.forEach((ev,i) => setTimeout(() => {
     window.open(buildURL(ev),'_blank');
     const b = document.getElementById(`cb-${i}`);
-    if (b) { b.classList.add('done'); b.textContent = '✅ Deschis!'; }
+    if (b) { b.classList.add('done'); b.textContent='✅ Geöffnet!'; }
   }, i*700));
-  toast(`🗓 Se deschid ${events.length} tab-uri Calendar!`);
+  toast(`🗓 ${events.length} Kalender-Tabs werden geöffnet!`);
 }
 
 function openEdit(i) {
-  editIdx = i; const ev = events[i];
-  document.getElementById('e-title').value = ev.title||'';
-  document.getElementById('e-date').value = ev.date||'';
-  document.getElementById('e-start').value = ev.startTime||'';
-  document.getElementById('e-end').value = ev.endTime||'';
-  document.getElementById('e-loc').value = ev.location||'';
-  document.getElementById('e-desc').value = ev.description||'';
+  editIdx=i; const ev=events[i];
+  document.getElementById('e-title').value=ev.title||'';
+  document.getElementById('e-date').value=ev.date||'';
+  document.getElementById('e-start').value=ev.startTime||'';
+  document.getElementById('e-end').value=ev.endTime||'';
+  document.getElementById('e-loc').value=ev.location||'';
+  document.getElementById('e-desc').value=ev.description||'';
   document.getElementById('overlay').classList.add('open');
 }
 
@@ -696,24 +687,24 @@ function closeModal(e) {
 
 function saveEdit() {
   if (editIdx===null) return;
-  events[editIdx] = {
+  events[editIdx]={
     ...events[editIdx],
-    title: document.getElementById('e-title').value,
-    date: document.getElementById('e-date').value,
-    startTime: document.getElementById('e-start').value,
-    endTime: document.getElementById('e-end').value,
-    location: document.getElementById('e-loc').value,
-    description: document.getElementById('e-desc').value,
+    title:document.getElementById('e-title').value,
+    date:document.getElementById('e-date').value,
+    startTime:document.getElementById('e-start').value,
+    endTime:document.getElementById('e-end').value,
+    location:document.getElementById('e-loc').value,
+    description:document.getElementById('e-desc').value,
   };
-  closeModal(); showEvents(); toast('✅ Eveniment actualizat!');
+  closeModal(); showEvents(); toast('✅ Termin aktualisiert!');
 }
 
 function toast(msg, isErr=false) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast'+(isErr?' err':'');
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast'+(isErr?' err':'');
   t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 3200);
+  setTimeout(()=>t.classList.remove('show'),3200);
 }
 </script>
 </body>
