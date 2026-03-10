@@ -364,16 +364,15 @@
   .cal-dropdown-btn:hover { transform:translateY(-1px); }
   .cal-dropdown-btn.done { background:linear-gradient(135deg,rgba(67,233,123,.8),rgba(56,239,125,.8)); }
   .cal-dropdown-menu {
-    position:absolute; bottom:calc(100% + 6px); right:0;
+    position:fixed;
     background:var(--surface); border:1px solid var(--border);
     border-radius:12px; padding:6px;
-    min-width:200px; z-index:50;
-    box-shadow:0 8px 30px rgba(0,0,0,.3);
+    min-width:210px; z-index:9999;
+    box-shadow:0 8px 30px rgba(0,0,0,.5);
     display:none;
-    animation:fadeUp .15s ease;
   }
-  @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-  .cal-dropdown-menu.open { display:block; }
+  .cal-dropdown-menu.open { display:block; animation:fadeDown .15s ease; }
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
   .cal-drop-item {
     display:flex; align-items:center; gap:10px;
     padding:9px 12px; border-radius:8px;
@@ -801,7 +800,22 @@ function toggleDropdown(i, e) {
   const menu = document.getElementById('ddm-' + i);
   const isOpen = menu.classList.contains('open');
   closeAllDropdowns();
-  if (!isOpen) menu.classList.add('open');
+  if (!isOpen) {
+    // Position below the button
+    const btn = e.currentTarget;
+    const rect = btn.getBoundingClientRect();
+    menu.style.display = 'block';
+    const menuH = menu.offsetHeight;
+    const spaceBelow = window.innerHeight - rect.bottom;
+    if (spaceBelow >= menuH + 8) {
+      menu.style.top = (rect.bottom + 6) + 'px';
+    } else {
+      menu.style.top = (rect.top - menuH - 6) + 'px';
+    }
+    menu.style.left = Math.max(8, rect.right - menu.offsetWidth) + 'px';
+    menu.style.display = '';
+    menu.classList.add('open');
+  }
 }
 
 function closeDropdown(i) {
