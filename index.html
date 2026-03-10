@@ -795,6 +795,26 @@ function fmtDate(d) {
 }
 
 // ── Calendar URLs ──────────────────────────────────────────────────────────
+// ── Dropdown calendar ────────────────────────────────────────────────────────
+function toggleDropdown(i, e) {
+  e.stopPropagation();
+  const menu = document.getElementById('ddm-' + i);
+  const isOpen = menu.classList.contains('open');
+  closeAllDropdowns();
+  if (!isOpen) menu.classList.add('open');
+}
+
+function closeDropdown(i) {
+  const menu = document.getElementById('ddm-' + i);
+  if (menu) menu.classList.remove('open');
+}
+
+function closeAllDropdowns() {
+  document.querySelectorAll('.cal-dropdown-menu').forEach(m => m.classList.remove('open'));
+}
+
+document.addEventListener('click', closeAllDropdowns);
+
 function buildGoogleURL(ev) {
   const ds = (ev.date||'').replace(/-/g,'');
   const s = (ev.startTime||'09:00').replace(':','')+'00';
