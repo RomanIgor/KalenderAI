@@ -413,7 +413,7 @@
       <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">
         <span id="theme-icon">☀️</span><span id="theme-label">Hell</span>
       </button>
-      <div class="badge"><div class="dot"></div>Groq</div>
+      <div class="badge"><div class="dot"></div>KI powered</div>
     </div>
   </header>
 
@@ -505,28 +505,28 @@
         <span class="cal-icon">🗓</span>
         <div class="cal-info">
           <div class="cal-name">Google Kalender</div>
-          <div class="cal-desc">Für Android & Gmail-Nutzer</div>
+          <div class="cal-desc">Öffnet Google Kalender direkt im Browser</div>
         </div>
       </button>
       <button class="cal-option" onclick="pickCalendar('outlook')">
         <span class="cal-icon">📘</span>
         <div class="cal-info">
           <div class="cal-name">Outlook / Microsoft</div>
-          <div class="cal-desc">Für Office 365 & Hotmail-Nutzer</div>
+          <div class="cal-desc">Öffnet Outlook direkt im Browser</div>
         </div>
       </button>
       <button class="cal-option" onclick="pickCalendar('samsung')">
         <span class="cal-icon">📱</span>
         <div class="cal-info">
           <div class="cal-name">Samsung Kalender</div>
-          <div class="cal-desc">Standard-Kalender auf Samsung-Geräten</div>
+          <div class="cal-desc">Lädt ICS-Datei — Samsung öffnet sie automatisch</div>
         </div>
       </button>
       <button class="cal-option" onclick="pickCalendar('ics')">
         <span class="cal-icon">📥</span>
         <div class="cal-info">
           <div class="cal-name">ICS-Datei herunterladen</div>
-          <div class="cal-desc">Für Apple Kalender, Thunderbird & andere</div>
+          <div class="cal-desc">Für Apple Kalender, Thunderbird & alle anderen</div>
         </div>
       </button>
     </div>
@@ -881,18 +881,25 @@ function addToCalendar(i, type) {
   const ev = events[i];
   const b = document.getElementById(`cb-${i}`);
 
-  if (type === 'ics' || type === 'samsung') {
+  if (type === 'google') {
+    window.open(buildGoogleURL(ev), '_blank');
+    toast('🗓 Google Kalender geöffnet — Termin bestätigen!');
+  } else if (type === 'outlook') {
+    window.open(buildOutlookURL(ev), '_blank');
+    toast('📘 Outlook geöffnet — Termin bestätigen!');
+  } else if (type === 'samsung') {
+    // Samsung: ICS file — Android opens it automatically with Samsung Calendar
+    const url = buildICS(ev);
+    const a = document.createElement('a');
+    a.href = url; a.download = `${ev.title||'termin'}.ics`;
+    a.click();
+    toast('📱 Datei geöffnet — Samsung Kalender wird gestartet!');
+  } else if (type === 'ics') {
     const url = buildICS(ev);
     const a = document.createElement('a');
     a.href = url; a.download = `${ev.title||'termin'}.ics`;
     a.click();
     toast('📥 ICS-Datei heruntergeladen!');
-  } else if (type === 'outlook') {
-    window.open(buildOutlookURL(ev), '_blank');
-    toast('📘 Outlook geöffnet — Termin bestätigen!');
-  } else {
-    window.open(buildGoogleURL(ev), '_blank');
-    toast('🗓 Google Kalender geöffnet — Termin bestätigen!');
   }
 
   if (b) { b.classList.add('done'); b.textContent = '✅ Gespeichert!'; }
