@@ -350,6 +350,41 @@
   .empty { text-align:center; padding:30px 20px; color:var(--muted); font-size:14px; }
   .empty .ei { font-size:40px; margin-bottom:12px; opacity:.5; }
 
+  /* Dropdown calendar button */
+  .cal-dropdown { position:relative; flex:2; }
+  .cal-dropdown-btn {
+    width:100%;
+    background:linear-gradient(135deg,rgba(245,80,54,.8),rgba(255,179,71,.8));
+    border:none; border-radius:8px; padding:8px 10px;
+    color:white; font-size:12px; font-weight:600;
+    cursor:pointer; font-family:'DM Sans',sans-serif;
+    display:flex; align-items:center; justify-content:space-between; gap:4px;
+    transition:all .2s;
+  }
+  .cal-dropdown-btn:hover { transform:translateY(-1px); }
+  .cal-dropdown-btn.done { background:linear-gradient(135deg,rgba(67,233,123,.8),rgba(56,239,125,.8)); }
+  .cal-dropdown-menu {
+    position:absolute; bottom:calc(100% + 6px); right:0;
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:12px; padding:6px;
+    min-width:200px; z-index:50;
+    box-shadow:0 8px 30px rgba(0,0,0,.3);
+    display:none;
+    animation:fadeUp .15s ease;
+  }
+  @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .cal-dropdown-menu.open { display:block; }
+  .cal-drop-item {
+    display:flex; align-items:center; gap:10px;
+    padding:9px 12px; border-radius:8px;
+    cursor:pointer; font-size:13px; color:var(--text);
+    transition:background .15s; border:none;
+    background:none; width:100%; text-align:left;
+    font-family:'DM Sans',sans-serif;
+  }
+  .cal-drop-item:hover { background:var(--surface2); }
+  .cal-drop-item .di { font-size:18px; }
+
   /* Calendar picker */
   .cal-picker {
     position:fixed; inset:0; background:rgba(0,0,0,.8);
@@ -423,12 +458,6 @@
     <span>KalenderAI ist bereit — kostenlos & ohne Anmeldung</span>
   </div>
 
-  <!-- Calendar preference -->
-  <div class="cal-pref" id="cal-pref" style="display:none;">
-    <span><span id="cal-pref-icon">🗓</span> <span id="cal-pref-name">Google Kalender</span></span>
-    <button onclick="resetCalPref()">Ändern</button>
-  </div>
-
   <!-- Tabs -->
   <div class="tabs">
     <button class="tab active" onclick="setMode('text')" id="tab-text">
@@ -492,54 +521,6 @@
   <div class="empty" id="empty" style="display:none;">
     <div class="ei">🔍</div>
     <div>Keine Termine gefunden.<br>Versuche es mit genaueren Datum- und Uhrzeitangaben.</div>
-  </div>
-</div>
-
-<!-- Calendar Picker -->
-<div class="cal-picker" id="cal-picker" onclick="closeCalPicker(event)">
-  <div class="cal-sheet">
-    <h3>📅 Kalender wählen</h3>
-    <p>Wo möchtest du den Termin speichern?</p>
-    <div class="cal-options">
-      <button class="cal-option" onclick="pickCalendar('google')">
-        <span class="cal-icon">🗓</span>
-        <div class="cal-info">
-          <div class="cal-name">Google Kalender</div>
-          <div class="cal-desc">Öffnet Google Kalender direkt im Browser</div>
-        </div>
-      </button>
-      <button class="cal-option" onclick="pickCalendar('outlook')">
-        <span class="cal-icon">📘</span>
-        <div class="cal-info">
-          <div class="cal-name">Outlook / Microsoft</div>
-          <div class="cal-desc">Öffnet Outlook direkt im Browser</div>
-        </div>
-      </button>
-      <button class="cal-option" onclick="pickCalendar('samsung')">
-        <span class="cal-icon">📱</span>
-        <div class="cal-info">
-          <div class="cal-name">Samsung Kalender</div>
-          <div class="cal-desc">Lädt ICS-Datei — Samsung öffnet sie automatisch</div>
-        </div>
-      </button>
-      <button class="cal-option" onclick="pickCalendar('ics')">
-        <span class="cal-icon">📥</span>
-        <div class="cal-info">
-          <div class="cal-name">ICS-Datei herunterladen</div>
-          <div class="cal-desc">Für Apple Kalender, Thunderbird & alle anderen</div>
-        </div>
-      </button>
-    </div>
-    <div style="margin-top:12px;font-size:12px;color:var(--muted);text-align:center;">
-      Immer diesen Kalender verwenden?
-      <div style="display:flex;gap:8px;margin-top:8px;">
-        <button onclick="pickCalendarAlways('google')" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 4px;font-size:11px;cursor:pointer;color:var(--muted);font-family:DM Sans,sans-serif;">🗓 Google</button>
-        <button onclick="pickCalendarAlways('outlook')" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 4px;font-size:11px;cursor:pointer;color:var(--muted);font-family:DM Sans,sans-serif;">📘 Outlook</button>
-        <button onclick="pickCalendarAlways('samsung')" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 4px;font-size:11px;cursor:pointer;color:var(--muted);font-family:DM Sans,sans-serif;">📱 Samsung</button>
-        <button onclick="pickCalendarAlways('ics')" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 4px;font-size:11px;cursor:pointer;color:var(--muted);font-family:DM Sans,sans-serif;">📥 ICS</button>
-      </div>
-    </div>
-    <button class="cal-cancel" onclick="closeCalPicker()">Abbrechen</button>
   </div>
 </div>
 
@@ -791,7 +772,17 @@ function showEvents() {
       ${ev.description?`<div style="font-size:13px;color:var(--muted);margin-bottom:10px;">${ev.description}</div>`:''}
       <div class="ev-actions">
         <button class="btn-edit" onclick="openEdit(${i})">✏️ Bearbeiten</button>
-        <button class="btn-cal" id="cb-${i}" onclick="openCalPicker(${i})">📅 Zu Kalender</button>
+        <div class="cal-dropdown" id="dd-${i}">
+          <button class="cal-dropdown-btn" id="cb-${i}" onclick="toggleDropdown(${i}, event)">
+            <span>📅 Zu Kalender</span><span>▲</span>
+          </button>
+          <div class="cal-dropdown-menu" id="ddm-${i}">
+            <button class="cal-drop-item" onclick="addToCalendar(${i},'google');closeDropdown(${i})"><span class="di">🗓</span>Google Kalender</button>
+            <button class="cal-drop-item" onclick="addToCalendar(${i},'outlook');closeDropdown(${i})"><span class="di">📘</span>Outlook</button>
+            <button class="cal-drop-item" onclick="addToCalendar(${i},'samsung');closeDropdown(${i})"><span class="di">📱</span>Samsung Kalender</button>
+            <button class="cal-drop-item" onclick="addToCalendar(${i},'ics');closeDropdown(${i})"><span class="di">📥</span>ICS-Datei</button>
+          </div>
+        </div>
       </div>
     </div>`).join('');
 }
@@ -914,7 +905,9 @@ function addToCalendar(i, type) {
     toast('📥 ICS-Datei heruntergeladen!');
   }
 
-  if (b) { b.classList.add('done'); b.textContent = '✅ Gespeichert!'; }
+  localStorage.setItem('kalenderai_last_cal', type);
+  const btn = document.getElementById(`cb-${i}`);
+  if (btn) { btn.classList.add('done'); btn.innerHTML = '✅ Gespeichert! ▲'; }
 }
 
 function addAll() {
