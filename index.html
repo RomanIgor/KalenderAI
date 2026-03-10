@@ -530,6 +530,15 @@
         </div>
       </button>
     </div>
+    <div style="margin-top:12px;font-size:12px;color:var(--muted);text-align:center;">
+      Immer diesen Kalender verwenden?
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button onclick="pickCalendarAlways('google')" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 4px;font-size:11px;cursor:pointer;color:var(--muted);font-family:DM Sans,sans-serif;">🗓 Google</button>
+        <button onclick="pickCalendarAlways('outlook')" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 4px;font-size:11px;cursor:pointer;color:var(--muted);font-family:DM Sans,sans-serif;">📘 Outlook</button>
+        <button onclick="pickCalendarAlways('samsung')" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 4px;font-size:11px;cursor:pointer;color:var(--muted);font-family:DM Sans,sans-serif;">📱 Samsung</button>
+        <button onclick="pickCalendarAlways('ics')" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 4px;font-size:11px;cursor:pointer;color:var(--muted);font-family:DM Sans,sans-serif;">📥 ICS</button>
+      </div>
+    </div>
     <button class="cal-cancel" onclick="closeCalPicker()">Abbrechen</button>
   </div>
 </div>
@@ -847,8 +856,6 @@ const calMeta = {
 };
 
 function openCalPicker(i) {
-  const saved = localStorage.getItem('kalenderai_cal');
-  if (saved) { addToCalendar(i, saved); return; }
   pickerIdx = i;
   document.getElementById('cal-picker').classList.add('open');
 }
@@ -859,6 +866,11 @@ function closeCalPicker(e) {
 }
 
 function pickCalendar(type) {
+  document.getElementById('cal-picker').classList.remove('open');
+  if (pickerIdx !== null) addToCalendar(pickerIdx, type);
+}
+
+function pickCalendarAlways(type) {
   document.getElementById('cal-picker').classList.remove('open');
   localStorage.setItem('kalenderai_cal', type);
   updateCalPref(type);
@@ -906,14 +918,8 @@ function addToCalendar(i, type) {
 }
 
 function addAll() {
-  const type = localStorage.getItem('kalenderai_cal');
-  if (!type) {
-    pickerIdx = -1; // signal for addAll
-    document.getElementById('cal-picker').classList.add('open');
-    return;
-  }
-  events.forEach((ev,i) => setTimeout(() => addToCalendar(i, type), i*500));
-  toast(`🗓 ${events.length} Termine werden gespeichert!`);
+  pickerIdx = -1;
+  document.getElementById('cal-picker').classList.add('open');
 }
 
 // Init calendar preference display
