@@ -216,45 +216,44 @@ body {
 
 /* ── Mode tabs ── */
 .tabs {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  display: flex;
+  background: var(--surface);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 4px;
   margin-bottom: 16px;
   animation: fadeIn 0.8s 0.3s both;
+  gap: 2px;
 }
 .tab {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 14px 8px;
-  border-radius: var(--radius-sm);
-  background: var(--surface);
-  border: 1px solid var(--border);
+  justify-content: center;
+  gap: 7px;
+  flex: 1;
+  padding: 10px 8px;
+  border-radius: 100px;
+  background: transparent;
+  border: none;
   cursor: pointer;
   font-family: var(--font);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--muted);
   transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
-  backdrop-filter: var(--blur);
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
 }
-.tab:hover {
-  background: var(--surface2);
-  color: var(--text);
-  transform: translateY(-2px);
-  border-color: var(--border2);
-}
+.tab:hover { color: var(--text); }
 .tab.active {
-  background: linear-gradient(135deg, rgba(108,99,255,0.2), rgba(167,139,250,0.15));
-  border-color: var(--accent);
-  color: var(--accent);
-  box-shadow: 0 4px 20px var(--accentGlow), inset 0 1px 0 rgba(255,255,255,0.1);
+  background: linear-gradient(135deg, var(--accent), #ff8c42);
+  color: white;
+  box-shadow: 0 2px 16px var(--accentGlow);
 }
-.tab-icon { font-size: 22px; transition: transform 0.2s; }
-.tab:hover .tab-icon, .tab.active .tab-icon { transform: scale(1.15); }
+.tab-icon { font-size: 16px; transition: transform 0.2s; }
+.tab.active .tab-icon { transform: scale(1.1); }
 
 /* ── Input area ── */
 .input-card {
@@ -804,13 +803,16 @@ textarea::placeholder { color: var(--muted2); }
   <!-- Tabs -->
   <div class="tabs">
     <button class="tab active" id="tab-text" onclick="setMode('text')">
-      <span class="tab-icon">✏️</span>Text
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      <span>Text</span>
     </button>
     <button class="tab" id="tab-photo" onclick="setMode('photo')">
-      <span class="tab-icon">📷</span>Foto
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <span>Foto</span>
     </button>
     <button class="tab" id="tab-voice" onclick="setMode('voice')">
-      <span class="tab-icon">🎙️</span>Sprache
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      <span>Sprache</span>
     </button>
   </div>
 
@@ -824,7 +826,7 @@ textarea::placeholder { color: var(--muted2); }
 
     <!-- Photo -->
     <div class="photo-zone" id="photo-zone" onclick="document.getElementById('photo-input').click()">
-      <div class="photo-zone-icon">📷</div>
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
       <div class="photo-zone-text" id="txt-photo-text">Foto aufnehmen oder aus Galerie wählen<br><span style="font-size:11px;opacity:0.6;">Einladung · Ticket · Notiz · Flyer</span></div>
       <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="onPhoto(event)">
     </div>
@@ -833,7 +835,7 @@ textarea::placeholder { color: var(--muted2); }
     <!-- Voice -->
     <div class="voice-zone" id="voice-zone">
       <button class="mic-btn" id="mic-btn" onclick="toggleVoice()">
-        <span id="mic-icon">🎙️</span>
+        <svg id="mic-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
         <div class="mic-rings"></div>
       </button>
       <div class="voice-status" id="voice-status">Zum Aufnehmen tippen</div>
@@ -843,7 +845,8 @@ textarea::placeholder { color: var(--muted2); }
 
   <!-- CTA -->
   <button class="btn-main" id="btn-main" onclick="analyze()">
-    <span>✨</span> Termine mit KI erkennen
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    Termine mit KI erkennen
   </button>
 
   <!-- Loader -->
@@ -990,7 +993,7 @@ async function toggleVoice() {
       mediaRecorder.start();
       isRec = true;
       document.getElementById('mic-btn').classList.add('recording');
-      document.getElementById('mic-icon').textContent = '⏹️';
+      document.getElementById('mic-icon').outerHTML = '<svg id="mic-icon" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="color:var(--red)"><rect x="4" y="4" width="16" height="16" rx="3"/></svg>';
       document.getElementById('voice-status').textContent = i18n.voiceRecording;
       document.getElementById('voice-transcript').textContent = '';
     } catch(err) {
@@ -1000,7 +1003,7 @@ async function toggleVoice() {
     mediaRecorder?.stop();
     isRec = false;
     document.getElementById('mic-btn').classList.remove('recording');
-    document.getElementById('mic-icon').textContent = '🎙️';
+    document.getElementById('mic-icon').outerHTML = '<svg id="mic-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>';
     document.getElementById('voice-status').textContent = i18n.voiceProcessing;
   }
 }
@@ -1074,7 +1077,9 @@ function setLoading(on) {
   document.getElementById('loader').classList.toggle('on', on);
   const b = document.getElementById('btn-main');
   b.disabled = on;
-  b.innerHTML = on ? `<span>⏳</span> ${i18n.analyzing}` : `<span>✨</span> ${i18n.cta}`;
+  b.innerHTML = on 
+    ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> ${i18n.analyzing}`
+    : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> ${i18n.cta}`;
 }
 
 function showEvents() {
@@ -1354,9 +1359,12 @@ function applyLang() {
   document.getElementById('lang-btn').textContent = i18n.langBtn;
   document.getElementById('theme-btn').textContent =
     document.documentElement.classList.contains('light') ? i18n.themeDark : i18n.themeLight;
-  document.getElementById('tab-text').innerHTML = `<span class="tab-icon">✏️</span>${i18n.tabText}`;
-  document.getElementById('tab-photo').innerHTML = `<span class="tab-icon">📷</span>${i18n.tabPhoto}`;
-  document.getElementById('tab-voice').innerHTML = `<span class="tab-icon">🎙️</span>${i18n.tabVoice}`;
+  const svgText = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`;
+  const svgPhoto = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`;
+  const svgVoice = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>`;
+  document.getElementById('tab-text').innerHTML = svgText + `<span>${i18n.tabText}</span>`;
+  document.getElementById('tab-photo').innerHTML = svgPhoto + `<span>${i18n.tabPhoto}</span>`;
+  document.getElementById('tab-voice').innerHTML = svgVoice + `<span>${i18n.tabVoice}</span>`;
   document.getElementById('txt-photo-text').innerHTML = i18n.photoText;
   document.querySelector('.btn-main').innerHTML = `<span>✨</span> ${i18n.cta}`;
   document.querySelector('.btn-all').textContent = i18n.addAll;
