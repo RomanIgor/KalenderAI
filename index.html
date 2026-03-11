@@ -66,6 +66,108 @@ body {
   transition: background 0.4s, color 0.4s;
 }
 
+/* ── Toggles ── */
+.toggle-wrap {
+  display: flex;
+  align-items: center;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 3px;
+  gap: 2px;
+  backdrop-filter: var(--blur);
+}
+.toggle-opt {
+  height: 32px;
+  border-radius: 100px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+  color: var(--muted);
+  flex-shrink: 0;
+  padding: 0 10px;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  gap: 5px;
+}
+.toggle-opt svg { transition: all 0.3s; flex-shrink: 0; }
+
+/* Theme toggle colors */
+#theme-dark.active {
+  background: linear-gradient(135deg, #1a1040, #2d1b69);
+  color: #a78bfa;
+  box-shadow: 0 2px 12px rgba(109,40,217,0.4);
+}
+#theme-light.active {
+  background: linear-gradient(135deg, #fff4e0, #ffe0b2);
+  color: #f59e0b;
+  box-shadow: 0 2px 12px rgba(245,158,11,0.4);
+}
+
+/* Lang toggle - flag style */
+.lang-toggle-wrap {
+  display: flex;
+  align-items: center;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 3px;
+  position: relative;
+  backdrop-filter: var(--blur);
+  gap: 0;
+}
+.lang-toggle-wrap .toggle-opt {
+  width: 52px; height: 32px;
+  padding: 0;
+  border-radius: 100px;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+.lang-flag {
+  position: absolute;
+  inset: 0;
+  border-radius: 100px;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.toggle-opt.active .lang-flag { opacity: 1; }
+.toggle-opt .lang-label {
+  position: relative;
+  z-index: 2;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  transition: color 0.3s;
+  color: var(--muted);
+}
+.toggle-opt.active .lang-label { color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+
+/* DE flag - keep CSS stripes, they look great */
+.flag-de { display: flex; flex-direction: column; }
+.flag-de .s1 { flex:1; background: #1a1a1a; }
+.flag-de .s2 { flex:1; background: #dd0000; }
+.flag-de .s3 { flex:1; background: #ffce00; }
+
+/* EN flag - emoji */
+.flag-en {
+  background: transparent;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  line-height: 1;
+}
+
+#lang-de.active { box-shadow: 0 2px 14px rgba(221,0,0,0.35); }
+#lang-en.active { box-shadow: 0 2px 14px rgba(1,33,105,0.5); }
+
+:root.light #theme-dark.active { box-shadow: 0 2px 12px rgba(109,40,217,0.25); }
+:root.light #theme-light.active { box-shadow: 0 2px 12px rgba(245,158,11,0.25); }
+
 /* ── Animated background ── */
 .bg-canvas {
   position: fixed;
@@ -785,11 +887,29 @@ textarea::placeholder { color: var(--muted2); }
       <div class="logo-text">KalenderAI</div>
     </div>
     <div class="header-actions">
-      <button class="pill-btn" onclick="toggleLang()" id="lang-btn">🌐 EN</button>
-      <button class="pill-btn" onclick="toggleTheme()" id="theme-btn">☀️ Hell</button>
-      <div class="pill-btn" style="cursor:default;">
-        <div class="status-dot"></div>
-        <span style="font-size:11px;font-family:var(--mono);font-weight:500;">KI powered</span>
+      <!-- Language toggle -->
+      <div class="toggle-wrap lang-toggle-wrap">
+        <button class="toggle-opt" id="lang-en" onclick="setLang('en')" title="English">
+          <div class="lang-flag flag-en">🇬🇧</div>
+          <span class="lang-label">EN</span>
+        </button>
+        <button class="toggle-opt active" id="lang-de" onclick="setLang('de')" title="Deutsch">
+          <div class="lang-flag flag-de">
+            <div class="s1"></div>
+            <div class="s2"></div>
+            <div class="s3"></div>
+          </div>
+          <span class="lang-label">DE</span>
+        </button>
+      </div>
+      <!-- Theme toggle -->
+      <div class="toggle-wrap">
+        <button class="toggle-opt" id="theme-dark" onclick="setTheme('dark')" title="Dark mode">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <button class="toggle-opt active" id="theme-light" onclick="setTheme('light')" title="Light mode">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
       </div>
     </div>
   </div>
@@ -935,18 +1055,15 @@ if (savedTheme === 'light') applyTheme('light');
 function applyTheme(t) {
   if (t === 'light') {
     document.documentElement.classList.add('light');
-    // theme btn text handled by applyLang
   } else {
     document.documentElement.classList.remove('light');
-    // theme btn text handled by applyLang
   }
+  document.getElementById('theme-dark').classList.toggle('active', t === 'dark');
+  document.getElementById('theme-light').classList.toggle('active', t === 'light');
 }
-function toggleTheme() {
-  const isLight = document.documentElement.classList.contains('light');
-  const next = isLight ? 'dark' : 'light';
-  applyTheme(next);
-  localStorage.setItem('kalenderai_theme', next);
-  document.getElementById('theme-btn').textContent = next === 'light' ? i18n.themeDark : i18n.themeLight;
+function setTheme(t) {
+  applyTheme(t);
+  localStorage.setItem('kalenderai_theme', t);
 }
 
 function setMode(m) {
@@ -1356,7 +1473,8 @@ let i18n = langs[lang];
 function applyLang() {
   i18n = langs[lang];
   document.getElementById('txt-status').textContent = i18n.status;
-  document.getElementById('lang-btn').textContent = i18n.langBtn;
+  document.getElementById('lang-de').classList.toggle('active', lang === 'de');
+  document.getElementById('lang-en').classList.toggle('active', lang === 'en');
   document.getElementById('theme-btn').textContent =
     document.documentElement.classList.contains('light') ? i18n.themeDark : i18n.themeLight;
   const svgText = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`;
@@ -1390,13 +1508,20 @@ function updateInputLabel() {
   }
 }
 
-function toggleLang() {
-  lang = lang === 'de' ? 'en' : 'de';
+function setLang(l) {
+  lang = l;
   localStorage.setItem('kalenderai_lang', lang);
+  document.getElementById('lang-de').classList.toggle('active', lang === 'de');
+  document.getElementById('lang-en').classList.toggle('active', lang === 'en');
   applyLang();
 }
 
-// Init language
+// Init language & theme toggles
+document.getElementById('lang-de').classList.toggle('active', lang === 'de');
+document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+const _t = localStorage.getItem('kalenderai_theme') || 'dark';
+document.getElementById('theme-dark').classList.toggle('active', _t === 'dark');
+document.getElementById('theme-light').classList.toggle('active', _t === 'light');
 applyLang();
 
 // Service Worker
