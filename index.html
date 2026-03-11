@@ -301,16 +301,7 @@ body {
 }
 
 /* ── Status bar ── */
-.status-bar {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 16px;
-  margin-bottom: 16px;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--green);
-  letter-spacing: 0.2px;
-  animation: fadeIn 0.8s 0.2s both;
-}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -914,12 +905,6 @@ textarea::placeholder { color: var(--muted2); }
     </div>
   </div>
 
-  <!-- Status -->
-  <div class="status-bar glass">
-    <div class="status-dot"></div>
-    <span style="font-size:12px;font-weight:600;"><span id="txt-status">Kostenlos & ohne Anmeldung — bereit</span>
-  </div>
-
   <!-- Tabs -->
   <div class="tabs">
     <button class="tab active" id="tab-text" onclick="setMode('text')">
@@ -1400,7 +1385,6 @@ function toast(msg, err=false) {
 // ── i18n ─────────────────────────────────────────────────────────────────────
 const langs = {
   de: {
-    status: 'Kostenlos & ohne Anmeldung — bereit',
     themeLight: '☀️ Hell', themeDark: '🌙 Dunkel',
     langBtn: '🌐 EN',
     tabText: 'Text', tabPhoto: 'Foto', tabVoice: 'Sprache',
@@ -1433,7 +1417,6 @@ const langs = {
     savedBtn: '✅ Gespeichert!',
   },
   en: {
-    status: 'Free & no login required — ready',
     themeLight: '☀️ Light', themeDark: '🌙 Dark',
     langBtn: '🌐 DE',
     tabText: 'Text', tabPhoto: 'Photo', tabVoice: 'Voice',
@@ -1472,7 +1455,6 @@ let i18n = langs[lang];
 
 function applyLang() {
   i18n = langs[lang];
-  document.getElementById('txt-status').textContent = i18n.status;
   document.getElementById('lang-de').classList.toggle('active', lang === 'de');
   document.getElementById('lang-en').classList.toggle('active', lang === 'en');
   // theme handled by toggle buttons
