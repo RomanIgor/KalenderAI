@@ -3,554 +3,926 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<meta name="theme-color" content="#0a0a0f">
+<meta name="theme-color" content="#080810">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="description" content="Termine automatisch per Text, Foto oder Sprache in Google Kalender eintragen">
+<meta name="description" content="Termine automatisch per Text, Foto oder Sprache in den Kalender eintragen">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="mobile-web-app-capable" content="yes">
 <title>KalenderAI – Termine automatisch eintragen</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --surface2: #1a1a26;
-    --border: #2a2a3a;
-    --accent: #f55036;
-    --accent2: #ff6b6b;
-    --accent3: #43e97b;
-    --text: #f0f0ff;
-    --muted: #8888aa;
-  }
-  :root.light {
-    --bg: #f5f4f0;
-    --surface: #ffffff;
-    --surface2: #f0ede8;
-    --border: #ddd8d0;
-    --accent: #f55036;
-    --accent2: #ff6b6b;
-    --accent3: #1a9e5c;
-    --text: #1a1a2e;
-    --muted: #888899;
-  }
-  body { transition: background .3s, color .3s; }
-  :root.light body::before {
-    background:
-      radial-gradient(ellipse at 20% 20%, rgba(245,80,54,0.06) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 80%, rgba(26,158,92,0.05) 0%, transparent 50%);
-  }
-  .theme-btn {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 5px 12px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: all .2s;
-    display: flex; align-items: center; gap: 6px;
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px; font-weight: 500;
-  }
-  .theme-btn:hover { transform: scale(1.05); }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-  body::before {
-    content:'';
-    position:fixed; top:-50%; left:-50%;
-    width:200%; height:200%;
-    background:
-      radial-gradient(ellipse at 20% 20%, rgba(245,80,54,0.07) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 80%, rgba(67,233,123,0.05) 0%, transparent 50%);
-    pointer-events:none; z-index:0;
-  }
-  .wrapper {
-    position:relative; z-index:1;
-    max-width:480px; margin:0 auto;
-    padding:0 16px 80px;
-  }
-  header {
-    padding:28px 0 20px;
-    display:flex; align-items:center; justify-content:space-between;
-  }
-  .logo {
-    font-family:'Syne',sans-serif; font-weight:800; font-size:22px;
-    background:linear-gradient(135deg,#f55036,#ffb347);
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-  }
-  .badge {
-    background:rgba(245,80,54,0.15); border:1px solid rgba(245,80,54,0.3);
-    border-radius:20px; padding:4px 12px;
-    font-size:11px; font-weight:600; color:#f55036;
-    display:flex; align-items:center; gap:6px;
-  }
-  .dot {
-    width:6px; height:6px; border-radius:50%;
-    background:var(--accent3); box-shadow:0 0 8px var(--accent3);
-    animation:pulse 2s infinite;
-  }
-  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.8)}}
+:root {
+  --bg: #080810;
+  --surface: rgba(255,255,255,0.04);
+  --surface2: rgba(255,255,255,0.07);
+  --surfaceHover: rgba(255,255,255,0.1);
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --accent: #f55036;
+  --accent2: #ff8c42;
+  --accentGlow: rgba(245,80,54,0.3);
+  --green: #34d399;
+  --greenGlow: rgba(52,211,153,0.2);
+  --red: #f87171;
+  --text: #f1f0ff;
+  --muted: rgba(241,240,255,0.45);
+  --muted2: rgba(241,240,255,0.25);
+  --font: 'Outfit', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --radius: 20px;
+  --radius-sm: 12px;
+  --blur: blur(20px);
+}
+:root.light {
+  --bg: #f0effe;
+  --surface: rgba(255,255,255,0.7);
+  --surface2: rgba(255,255,255,0.5);
+  --surfaceHover: rgba(255,255,255,0.9);
+  --border: rgba(108,99,255,0.12);
+  --border2: rgba(108,99,255,0.22);
+  --accent: #f55036;
+  --accent2: #7c3aed;
+  --accentGlow: rgba(245,80,54,0.15);
+  --green: #059669;
+  --greenGlow: rgba(5,150,105,0.15);
+  --red: #dc2626;
+  --text: #1a1830;
+  --muted: rgba(26,24,48,0.5);
+  --muted2: rgba(26,24,48,0.3);
+}
 
-  .setup-card {
-    background:linear-gradient(135deg,rgba(245,80,54,0.1),rgba(255,179,71,0.07));
-    border:1px solid rgba(245,80,54,0.2);
-    border-radius:18px; padding:18px; margin-bottom:18px;
-  }
-  .setup-card h3 {
-    font-family:'Syne',sans-serif; font-size:14px; font-weight:700;
-    margin-bottom:12px; display:flex; align-items:center; gap:8px;
-  }
-  .step {
-    display:flex; align-items:flex-start; gap:10px;
-    margin-bottom:10px; font-size:13px; color:var(--muted); line-height:1.5;
-  }
-  .step:last-child { margin-bottom:0; }
-  .sn {
-    background:var(--accent); color:white; border-radius:50%;
-    width:20px; height:20px; min-width:20px;
-    display:flex; align-items:center; justify-content:center;
-    font-size:11px; font-weight:700;
-  }
-  .setup-card a { color:var(--accent); font-weight:600; text-decoration:none; }
-  .setup-card strong { color:var(--text); }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  .api-box {
-    background:var(--surface); border:1px solid var(--border);
-    border-radius:16px; padding:16px; margin-bottom:20px;
-  }
-  .api-box label {
-    display:block; font-size:12px; color:var(--muted);
-    margin-bottom:8px; text-transform:uppercase; letter-spacing:.08em; font-weight:500;
-  }
-  .api-row { display:flex; gap:8px; }
-  .api-row input {
-    flex:1; background:var(--surface2); border:1px solid var(--border);
-    border-radius:10px; padding:10px 14px;
-    color:var(--text); font-size:13px; font-family:monospace;
-    outline:none; transition:border-color .2s;
-  }
-  .api-row input:focus { border-color:var(--accent); }
-  .api-row input::placeholder { color:var(--muted); }
-  .btn-save {
-    background:var(--accent); border:none; border-radius:10px;
-    padding:10px 16px; color:white; font-size:13px; font-weight:600;
-    cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .2s;
-    white-space:nowrap;
-  }
-  .btn-save:hover { background:#ff6b52; }
-  .saved-msg { font-size:12px; color:var(--accent3); margin-top:7px; display:none; }
+html { height: 100%; }
 
-  .tabs { display:flex; gap:8px; margin-bottom:16px; }
-  .tab {
-    flex:1; background:var(--surface); border:1px solid var(--border);
-    border-radius:12px; padding:10px 6px;
-    color:var(--muted); font-size:12px; font-weight:500;
-    cursor:pointer; text-align:center;
-    display:flex; flex-direction:column; align-items:center; gap:4px;
-    transition:all .2s; font-family:'DM Sans',sans-serif;
-  }
-  .tab .icon { font-size:20px; }
-  .tab.active {
-    background:rgba(245,80,54,0.1); border-color:var(--accent); color:var(--text);
-  }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background 0.4s, color 0.4s;
+}
 
-  .panel {
-    background:var(--surface); border:1px solid var(--border);
-    border-radius:20px; padding:20px; margin-bottom:16px;
-    box-shadow:0 0 40px rgba(245,80,54,0.06);
-  }
-  .panel-title {
-    font-family:'Syne',sans-serif; font-size:12px; font-weight:700;
-    color:var(--muted); margin-bottom:14px;
-    text-transform:uppercase; letter-spacing:.1em;
-  }
-  textarea {
-    width:100%; background:var(--surface2); border:1px solid var(--border);
-    border-radius:12px; padding:14px; color:var(--text);
-    font-size:15px; font-family:'DM Sans',sans-serif;
-    resize:none; outline:none; line-height:1.6; transition:border-color .2s;
-    min-height:100px;
-  }
-  textarea:focus { border-color:var(--accent); }
-  textarea::placeholder { color:var(--muted); }
+/* ── Animated background ── */
+.bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.35;
+  animation: drift 20s ease-in-out infinite;
+}
+.orb-1 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, #f55036, transparent);
+  top: -100px; left: -100px;
+  animation-delay: 0s;
+}
+.orb-2 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, #ff8c42, transparent);
+  bottom: -80px; right: -80px;
+  animation-delay: -7s;
+}
+.orb-3 {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, #34d399, transparent);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: -14s;
+  opacity: 0.15;
+}
+:root.light .orb { opacity: 0.2; }
 
-  .drop-zone {
-    border:2px dashed var(--border); border-radius:14px;
-    padding:28px 20px; text-align:center; cursor:pointer;
-    transition:all .25s; background:var(--surface2);
-    position:relative; overflow:hidden;
-  }
-  .drop-zone:hover { border-color:var(--accent); background:rgba(245,80,54,0.04); }
-  .drop-zone input { position:absolute; inset:0; opacity:0; cursor:pointer; }
-  .drop-zone .di { font-size:34px; margin-bottom:8px; }
-  .drop-zone .dt { font-size:14px; color:var(--muted); }
-  .drop-zone .ds { font-size:12px; color:#555566; margin-top:4px; }
-  #prev { width:100%; border-radius:10px; margin-top:12px; max-height:200px; object-fit:cover; display:none; }
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -20px) scale(1.05); }
+  66% { transform: translate(-20px, 30px) scale(0.95); }
+}
 
-  .voice-wrap { display:flex; flex-direction:column; align-items:center; gap:16px; }
-  .mic-btn {
-    width:80px; height:80px; border-radius:50%;
-    background:linear-gradient(135deg,var(--accent),#ffb347);
-    border:none; cursor:pointer; font-size:32px;
-    display:flex; align-items:center; justify-content:center;
-    transition:all .25s; box-shadow:0 0 30px rgba(245,80,54,0.4);
-  }
-  .mic-btn.rec {
-    background:linear-gradient(135deg,#ff6b6b,#ff8e53);
-    box-shadow:0 0 30px rgba(255,107,107,0.5);
-    animation:rp 1.5s infinite;
-  }
-  @keyframes rp{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-  .voice-hint { font-size:13px; color:var(--muted); text-align:center; }
-  .transcript {
-    width:100%; background:var(--surface2); border-radius:10px;
-    padding:12px; font-size:14px; color:var(--text);
-    min-height:60px; line-height:1.6; display:none;
-  }
+/* ── Layout ── */
+.app {
+  position: relative;
+  z-index: 1;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px 16px 40px;
+  min-height: 100vh;
+}
 
-  .btn-main {
-    width:100%; background:linear-gradient(135deg,var(--accent),#ffb347);
-    border:none; border-radius:14px; padding:16px;
-    color:white; font-size:16px; font-weight:700;
-    font-family:'Syne',sans-serif; cursor:pointer;
-    display:flex; align-items:center; justify-content:center; gap:8px;
-    box-shadow:0 4px 20px rgba(245,80,54,0.35);
-    transition:all .25s; letter-spacing:.02em;
-  }
-  .btn-main:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(245,80,54,0.45); }
-  .btn-main:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+/* ── Glass card ── */
+.glass {
+  background: var(--surface);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
 
-  .loader { height:3px; background:var(--surface2); border-radius:2px; overflow:hidden; margin:12px 0; display:none; }
-  .loader.on { display:block; }
-  .loader-bar {
-    height:100%; border-radius:2px; width:100%;
-    background:linear-gradient(90deg,var(--accent),var(--accent3),var(--accent));
-    background-size:200%; animation:sh 1.5s infinite;
-  }
-  @keyframes sh{0%{background-position:0%}100%{background-position:200%}}
+/* ── Header ── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0 24px;
+  animation: slideDown 0.6s cubic-bezier(0.16,1,0.3,1) both;
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
-  .results { margin-top:22px; }
-  .res-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-  .res-title { font-family:'Syne',sans-serif; font-size:16px; font-weight:700; }
-  .count {
-    background:rgba(67,233,123,.15); color:var(--accent3);
-    border-radius:20px; padding:3px 10px; font-size:12px; font-weight:600;
-  }
-  .btn-all {
-    width:100%;
-    background:linear-gradient(135deg,rgba(67,233,123,.15),rgba(56,239,125,.08));
-    border:1px solid rgba(67,233,123,.3); border-radius:12px;
-    padding:14px; color:var(--accent3); font-size:14px; font-weight:600;
-    cursor:pointer; font-family:'Syne',sans-serif;
-    display:flex; align-items:center; justify-content:center; gap:8px;
-    transition:all .2s; margin-bottom:10px;
-  }
-  .btn-all:hover { background:rgba(67,233,123,.22); transform:translateY(-1px); }
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-icon {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 4px 20px var(--accentGlow);
+}
+.logo-text {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--text) 60%, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
-  .ev-card {
-    background:var(--surface); border:1px solid var(--border);
-    border-radius:14px; padding:16px; margin-bottom:10px;
-    position:relative; overflow:hidden; transition:border-color .2s;
-  }
-  .ev-card::before {
-    content:''; position:absolute; left:0; top:0; bottom:0;
-    width:3px; background:var(--accent); border-radius:2px 0 0 2px;
-  }
-  .ev-card:hover { border-color:rgba(245,80,54,.4); }
-  .ev-top { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:8px; }
-  .ev-name { font-weight:600; font-size:15px; flex:1; }
-  .ev-conf {
-    font-size:11px; padding:2px 8px; border-radius:20px;
-    background:rgba(67,233,123,.1); color:var(--accent3); white-space:nowrap;
-  }
-  .ev-meta { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
-  .chip {
-    display:flex; align-items:center; gap:4px;
-    font-size:12px; color:var(--muted);
-    background:var(--surface2); border-radius:6px; padding:4px 8px;
-  }
-  .ev-actions { display:flex; gap:8px; }
-  .btn-edit {
-    flex:1; background:var(--surface2); border:1px solid var(--border);
-    border-radius:8px; padding:8px; color:var(--muted);
-    font-size:12px; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .2s;
-  }
-  .btn-edit:hover { color:var(--text); border-color:var(--accent); }
-  .btn-cal {
-    flex:2; background:linear-gradient(135deg,rgba(245,80,54,.8),rgba(255,179,71,.8));
-    border:none; border-radius:8px; padding:8px 12px;
-    color:white; font-size:12px; font-weight:600;
-    cursor:pointer; font-family:'DM Sans',sans-serif;
-    display:flex; align-items:center; justify-content:center; gap:6px;
-    transition:all .2s;
-  }
-  .btn-cal:hover { transform:translateY(-1px); }
-  .btn-cal.done { background:linear-gradient(135deg,rgba(67,233,123,.8),rgba(56,239,125,.8)); }
+.header-actions { display: flex; gap: 8px; align-items: center; }
 
-  .overlay {
-    position:fixed; inset:0; background:rgba(0,0,0,.8);
-    backdrop-filter:blur(8px); z-index:100;
-    display:none; align-items:flex-end; justify-content:center;
-  }
-  .overlay.open { display:flex; }
-  .modal {
-    background:var(--surface); border:1px solid var(--border);
-    border-radius:24px 24px 0 0; padding:24px 20px 40px;
-    width:100%; max-width:480px;
-    animation:su .3s cubic-bezier(.34,1.56,.64,1);
-  }
-  @keyframes su{from{transform:translateY(100%)}to{transform:translateY(0)}}
-  .modal h3 { font-family:'Syne',sans-serif; font-size:18px; font-weight:700; margin-bottom:20px; }
-  .fg { margin-bottom:14px; }
-  .fl {
-    display:block; font-size:12px; color:var(--muted);
-    margin-bottom:6px; text-transform:uppercase; letter-spacing:.08em; font-weight:500;
-  }
-  .fi {
-    width:100%; background:var(--surface2); border:1px solid var(--border);
-    border-radius:10px; padding:11px 14px; color:var(--text);
-    font-size:14px; font-family:'DM Sans',sans-serif; outline:none; transition:border-color .2s;
-  }
-  .fi:focus { border-color:var(--accent); }
-  .m-actions { display:flex; gap:10px; margin-top:20px; }
-  .btn-cancel {
-    flex:1; background:var(--surface2); border:1px solid var(--border);
-    border-radius:10px; padding:12px; color:var(--muted);
-    font-size:14px; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .2s;
-  }
-  .btn-cancel:hover { color:var(--text); }
-  .btn-ok {
-    flex:2; background:linear-gradient(135deg,var(--accent),#ffb347);
-    border:none; border-radius:10px; padding:12px;
-    color:white; font-size:14px; font-weight:600;
-    cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .2s;
-  }
-  .btn-ok:hover { transform:translateY(-1px); }
+.pill-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--surface2);
+  backdrop-filter: var(--blur);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-family: var(--font);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+.pill-btn:hover {
+  background: var(--surfaceHover);
+  border-color: var(--border2);
+  transform: translateY(-1px);
+}
 
-  .toast {
-    position:fixed; bottom:24px; left:50%;
-    transform:translateX(-50%) translateY(100px);
-    background:var(--surface); border:1px solid var(--accent3);
-    border-radius:12px; padding:12px 20px;
-    font-size:14px; color:var(--accent3); z-index:200;
-    transition:transform .3s cubic-bezier(.34,1.56,.64,1);
-    white-space:nowrap; max-width:90vw; text-align:center;
-  }
-  .toast.show { transform:translateX(-50%) translateY(0); }
-  .toast.err { border-color:var(--accent2); color:var(--accent2); }
+.status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+  animation: pulse-dot 2s ease infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--green); }
+  50% { opacity: 0.6; box-shadow: 0 0 4px var(--green); }
+}
 
-  .empty { text-align:center; padding:30px 20px; color:var(--muted); font-size:14px; }
-  .empty .ei { font-size:40px; margin-bottom:12px; opacity:.5; }
+/* ── Status bar ── */
+.status-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--green);
+  letter-spacing: 0.2px;
+  animation: fadeIn 0.8s 0.2s both;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
-  /* Dropdown calendar button */
-  .cal-dropdown { position:relative; flex:2; }
-  .cal-dropdown-btn {
-    width:100%;
-    background:linear-gradient(135deg,rgba(245,80,54,.8),rgba(255,179,71,.8));
-    border:none; border-radius:8px; padding:8px 10px;
-    color:white; font-size:12px; font-weight:600;
-    cursor:pointer; font-family:'DM Sans',sans-serif;
-    display:flex; align-items:center; justify-content:space-between; gap:4px;
-    transition:all .2s;
-  }
-  .cal-dropdown-btn:hover { transform:translateY(-1px); }
-  .cal-dropdown-btn.done { background:linear-gradient(135deg,rgba(67,233,123,.8),rgba(56,239,125,.8)); }
-  .cal-dropdown-menu {
-    position:fixed;
-    background:var(--surface); border:1px solid var(--border);
-    border-radius:12px; padding:6px;
-    min-width:210px; z-index:9999;
-    box-shadow:0 8px 30px rgba(0,0,0,.5);
-    display:none;
-  }
-  .cal-dropdown-menu.open { display:block; animation:fadeDown .15s ease; }
-  @keyframes fadeDown{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-  .cal-drop-item {
-    display:flex; align-items:center; gap:10px;
-    padding:9px 12px; border-radius:8px;
-    cursor:pointer; font-size:13px; color:var(--text);
-    transition:background .15s; border:none;
-    background:none; width:100%; text-align:left;
-    font-family:'DM Sans',sans-serif;
-  }
-  .cal-drop-item:hover { background:var(--surface2); }
-  .cal-drop-item .di { font-size:18px; }
+/* ── Mode tabs ── */
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+  animation: fadeIn 0.8s 0.3s both;
+}
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
+  backdrop-filter: var(--blur);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+.tab:hover {
+  background: var(--surface2);
+  color: var(--text);
+  transform: translateY(-2px);
+  border-color: var(--border2);
+}
+.tab.active {
+  background: linear-gradient(135deg, rgba(108,99,255,0.2), rgba(167,139,250,0.15));
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 4px 20px var(--accentGlow), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.tab-icon { font-size: 22px; transition: transform 0.2s; }
+.tab:hover .tab-icon, .tab.active .tab-icon { transform: scale(1.15); }
 
-  /* Calendar picker */
-  .cal-picker {
-    position:fixed; inset:0; background:rgba(0,0,0,.8);
-    backdrop-filter:blur(8px); z-index:150;
-    display:none; align-items:flex-end; justify-content:center;
-  }
-  .cal-picker.open { display:flex; }
-  .cal-sheet {
-    background:var(--surface); border:1px solid var(--border);
-    border-radius:24px 24px 0 0; padding:24px 20px 40px;
-    width:100%; max-width:480px;
-    animation:su .3s cubic-bezier(.34,1.56,.64,1);
-  }
-  .cal-sheet h3 {
-    font-family:'Syne',sans-serif; font-size:16px; font-weight:700;
-    margin-bottom:6px;
-  }
-  .cal-sheet p { font-size:13px; color:var(--muted); margin-bottom:18px; }
-  .cal-options { display:flex; flex-direction:column; gap:10px; }
-  .cal-option {
-    display:flex; align-items:center; gap:14px;
-    background:var(--surface2); border:1px solid var(--border);
-    border-radius:14px; padding:14px 16px;
-    cursor:pointer; transition:all .2s; text-align:left;
-  }
-  .cal-option:hover { border-color:var(--accent); transform:translateY(-1px); }
-  .cal-option .cal-icon { font-size:28px; }
-  .cal-option .cal-info { flex:1; }
-  .cal-option .cal-name { font-weight:600; font-size:15px; }
-  .cal-option .cal-desc { font-size:12px; color:var(--muted); margin-top:2px; }
-  .cal-cancel {
-    width:100%; margin-top:12px;
-    background:var(--surface2); border:1px solid var(--border);
-    border-radius:12px; padding:13px;
-    color:var(--muted); font-size:14px; cursor:pointer;
-    font-family:'DM Sans',sans-serif; transition:all .2s;
-  }
-  .cal-cancel:hover { color:var(--text); }
+/* ── Input area ── */
+.input-card {
+  margin-bottom: 16px;
+  padding: 20px;
+  animation: fadeIn 0.8s 0.4s both;
+  position: relative;
+  overflow: hidden;
+}
+.input-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.5;
+}
+.input-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+  font-family: var(--mono);
+}
+textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text);
+  resize: none;
+  min-height: 100px;
+  line-height: 1.6;
+  caret-color: var(--accent);
+}
+textarea::placeholder { color: var(--muted2); }
 
-  /* Saved calendar preference */
-  .cal-pref {
-    display:flex; align-items:center; justify-content:space-between;
-    background:var(--surface2); border:1px solid var(--border);
-    border-radius:12px; padding:10px 14px; margin-bottom:16px;
-    font-size:13px; color:var(--muted);
-  }
-  .cal-pref span { display:flex; align-items:center; gap:8px; }
-  .cal-pref button {
-    background:none; border:none; color:var(--accent);
-    font-size:12px; cursor:pointer; font-family:'DM Sans',sans-serif;
-    font-weight:600;
-  }
+/* Photo area */
+.photo-zone {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 140px;
+  gap: 12px;
+  cursor: pointer;
+  border: 1.5px dashed var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 24px;
+  transition: all 0.2s;
+}
+.photo-zone:hover {
+  border-color: var(--accent);
+  background: rgba(108,99,255,0.05);
+}
+.photo-zone-icon { font-size: 36px; opacity: 0.6; }
+.photo-zone-text { font-size: 14px; color: var(--muted); text-align: center; line-height: 1.5; }
+.photo-preview {
+  width: 100%; border-radius: var(--radius-sm);
+  max-height: 220px; object-fit: cover; display: none;
+}
+
+/* Voice area */
+.voice-zone {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 140px;
+  gap: 16px;
+}
+.mic-btn {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: var(--surface2);
+  border: 2px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+  position: relative;
+}
+.mic-btn:hover {
+  transform: scale(1.08);
+  border-color: var(--accent);
+  box-shadow: 0 0 30px var(--accentGlow);
+}
+.mic-btn.recording {
+  background: rgba(248,113,113,0.15);
+  border-color: var(--red);
+  box-shadow: 0 0 40px rgba(248,113,113,0.3);
+  animation: mic-pulse 1.5s ease infinite;
+}
+@keyframes mic-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(248,113,113,0.3); }
+  50% { transform: scale(1.05); box-shadow: 0 0 60px rgba(248,113,113,0.5); }
+}
+.mic-rings {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  border: 2px solid var(--red);
+  opacity: 0;
+  pointer-events: none;
+}
+.mic-btn.recording .mic-rings {
+  animation: ring-expand 1.5s ease infinite;
+}
+@keyframes ring-expand {
+  from { transform: scale(0.8); opacity: 0.6; }
+  to   { transform: scale(1.4); opacity: 0; }
+}
+.voice-status { font-size: 13px; color: var(--muted); font-weight: 500; }
+.voice-transcript {
+  font-size: 14px; color: var(--text);
+  text-align: center; line-height: 1.6;
+  padding: 0 8px; min-height: 20px;
+  font-style: italic; opacity: 0.8;
+}
+
+/* ── CTA Button ── */
+.btn-main {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: none;
+  border-radius: var(--radius-sm);
+  color: white;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
+  margin-bottom: 16px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  box-shadow: 0 4px 30px var(--accentGlow);
+  animation: fadeIn 0.8s 0.5s both;
+  position: relative;
+  overflow: hidden;
+}
+.btn-main::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.btn-main:hover::before { opacity: 1; }
+.btn-main:hover { transform: translateY(-2px); box-shadow: 0 8px 40px var(--accentGlow); }
+.btn-main:active { transform: translateY(0); }
+.btn-main:disabled {
+  opacity: 0.5; cursor: not-allowed; transform: none;
+  box-shadow: none;
+}
+
+/* Loader bar */
+.loader {
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2), var(--green));
+  border-radius: 2px;
+  margin-bottom: 16px;
+  display: none;
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease infinite;
+}
+.loader.on { display: block; }
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Empty state ── */
+.empty {
+  text-align: center;
+  padding: 32px 20px;
+  color: var(--muted);
+  font-size: 14px;
+  display: none;
+  animation: fadeIn 0.4s both;
+}
+.empty-icon { font-size: 44px; margin-bottom: 12px; opacity: 0.4; }
+.empty-text { line-height: 1.6; }
+
+/* ── Results ── */
+.results { display: none; animation: fadeIn 0.5s both; }
+
+.results-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+.results-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-family: var(--mono);
+}
+.results-count {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-family: var(--mono);
+}
+
+.btn-all {
+  width: 100%;
+  padding: 13px;
+  background: var(--surface);
+  backdrop-filter: var(--blur);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  color: var(--accent2);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 12px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+.btn-all:hover {
+  background: var(--surface2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px var(--accentGlow);
+}
+
+/* ── Event cards ── */
+.ev-card {
+  margin-bottom: 10px;
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: cardIn 0.4s cubic-bezier(0.16,1,0.3,1) both;
+}
+.ev-card:hover { transform: translateY(-2px); box-shadow: 0 8px 40px rgba(0,0,0,0.3); }
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.ev-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--accent), var(--accent2));
+  border-radius: 3px 0 0 3px;
+}
+
+.ev-top {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 12px; gap: 10px;
+}
+.ev-name {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.2px;
+}
+.ev-conf {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--accent2);
+  background: rgba(245,80,54,0.12);
+  border: 1px solid rgba(245,80,54,0.2);
+  padding: 3px 8px;
+  border-radius: 100px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ev-chips {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 14px;
+}
+.chip {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 4px 10px;
+}
+
+.ev-desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 14px;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.ev-actions { display: flex; gap: 8px; }
+
+.btn-edit {
+  flex: 1;
+  padding: 9px 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.2px;
+}
+.btn-edit:hover {
+  background: var(--surfaceHover);
+  color: var(--text);
+  border-color: var(--border2);
+}
+
+/* Dropdown */
+.cal-dropdown { position: relative; flex: 2; }
+.cal-dropdown-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  color: white;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between; gap: 6px;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 12px var(--accentGlow);
+}
+.cal-dropdown-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 20px var(--accentGlow); }
+.cal-dropdown-btn.done {
+  background: linear-gradient(135deg, var(--green), #6ee7b7);
+  box-shadow: 0 2px 12px var(--greenGlow);
+}
+.cal-dropdown-menu {
+  position: fixed;
+  background: rgba(15,13,30,0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 6px;
+  min-width: 220px;
+  z-index: 9999;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(245,80,54,0.1);
+  display: none;
+}
+:root.light .cal-dropdown-menu {
+  background: rgba(255,255,255,0.95);
+}
+.cal-dropdown-menu.open {
+  display: block;
+  animation: menuIn 0.2s cubic-bezier(0.16,1,0.3,1) both;
+}
+@keyframes menuIn {
+  from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.cal-drop-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  transition: all 0.15s;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font);
+  letter-spacing: 0.2px;
+}
+.cal-drop-item:hover {
+  background: var(--surface2);
+  color: var(--accent);
+}
+.cal-drop-item .di { font-size: 20px; }
+
+/* ── Modal ── */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  display: none; align-items: flex-end; justify-content: center;
+}
+.overlay.open { display: flex; }
+
+.modal {
+  background: #0f0d1e;
+  border: 1px solid var(--border2);
+  border-radius: 24px 24px 0 0;
+  padding: 28px 20px 44px;
+  width: 100%; max-width: 480px;
+  animation: modalUp 0.35s cubic-bezier(0.16,1,0.3,1) both;
+}
+:root.light .modal { background: #faf9ff; }
+
+@keyframes modalUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.modal-handle {
+  width: 36px; height: 4px;
+  background: var(--border2);
+  border-radius: 2px;
+  margin: 0 auto 24px;
+}
+.modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  letter-spacing: -0.3px;
+}
+
+.field { margin-bottom: 16px; }
+.field label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+  font-family: var(--mono);
+}
+.field input, .field textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-family: var(--font);
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.field input:focus, .field textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accentGlow);
+}
+
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.btn-save-modal {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: none;
+  border-radius: var(--radius-sm);
+  color: white;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 20px var(--accentGlow);
+  letter-spacing: 0.3px;
+}
+.btn-save-modal:hover { transform: translateY(-1px); box-shadow: 0 8px 30px var(--accentGlow); }
+
+/* ── Toast ── */
+.toast-wrap {
+  position: fixed;
+  bottom: 24px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  pointer-events: none;
+}
+.toast {
+  background: rgba(20,18,40,0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border2);
+  border-radius: 100px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  letter-spacing: 0.2px;
+}
+:root.light .toast { background: rgba(255,255,255,0.95); }
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.err { border-color: var(--red); color: var(--red); }
 </style>
 </head>
 <body>
 
-<div class="wrapper">
-  <header>
-    <div class="logo">🗓 KalenderAI</div>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">
-        <span id="theme-icon">☀️</span><span id="theme-label">Hell</span>
-      </button>
-      <div class="badge"><div class="dot"></div>KI powered</div>
-    </div>
-  </header>
+<div class="bg-canvas">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
 
-  <!-- Status Bar -->
-  <div id="status-bar" style="background:linear-gradient(135deg,rgba(245,80,54,0.1),rgba(255,179,71,0.07));border:1px solid rgba(245,80,54,0.2);border-radius:14px;padding:12px 16px;margin-bottom:18px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);">
-    <div class="dot"></div>
-    <span>KalenderAI ist bereit — kostenlos & ohne Anmeldung</span>
+<div class="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">🗓</div>
+      <div class="logo-text">KalenderAI</div>
+    </div>
+    <div class="header-actions">
+      <button class="pill-btn" onclick="toggleLang()" id="lang-btn">🌐 EN</button>
+      <button class="pill-btn" onclick="toggleTheme()" id="theme-btn">☀️ Hell</button>
+      <div class="pill-btn" style="cursor:default;">
+        <div class="status-dot"></div>
+        <span style="font-size:11px;font-family:var(--mono);font-weight:500;">KI powered</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status -->
+  <div class="status-bar glass">
+    <div class="status-dot"></div>
+    <span style="font-size:12px;font-weight:600;"><span id="txt-status">Kostenlos & ohne Anmeldung — bereit</span>
   </div>
 
   <!-- Tabs -->
   <div class="tabs">
-    <button class="tab active" onclick="setMode('text')" id="tab-text">
-      <span class="icon">✏️</span>Text
+    <button class="tab active" id="tab-text" onclick="setMode('text')">
+      <span class="tab-icon">✏️</span>Text
     </button>
-    <button class="tab" onclick="setMode('photo')" id="tab-photo">
-      <span class="icon">📷</span>Foto
+    <button class="tab" id="tab-photo" onclick="setMode('photo')">
+      <span class="tab-icon">📷</span>Foto
     </button>
-    <button class="tab" onclick="setMode('voice')" id="tab-voice">
-      <span class="icon">🎙️</span>Sprache
+    <button class="tab" id="tab-voice" onclick="setMode('voice')">
+      <span class="tab-icon">🎙️</span>Sprache
     </button>
   </div>
 
-  <!-- Text Panel -->
-  <div class="panel" id="panel-text">
-    <div class="panel-title">Termin beschreiben</div>
-    <textarea id="txt" rows="4"
-      placeholder="z.B. Teammeeting Donnerstag 15. Mai um 14:00 Uhr im Konferenzraum&#10;&#10;Zahnarzt Freitag um 10:30 Uhr, Dr. Müller&#10;&#10;Flug nach Berlin Montag früh um 8:15 Uhr"></textarea>
-  </div>
+  <!-- Input card -->
+  <div class="glass input-card">
+    <div class="input-label" id="txt-input-label">Termin beschreiben</div>
 
-  <!-- Photo Panel -->
-  <div class="panel" id="panel-photo" style="display:none;">
-    <div class="panel-title">Foto aufnehmen oder hochladen</div>
-    <div class="drop-zone">
-      <input type="file" accept="image/*" onchange="onPhoto(event)">
-      <div class="di">📸</div>
-      <div class="dt">Tippen zum Fotografieren oder Bild auswählen</div>
-      <div class="ds">Einladungen, Tickets, SMS, Notizen — alles mit einem Datum</div>
-      <img id="prev" src="" alt="Vorschau">
+    <!-- Text -->
+    <textarea id="text-input" rows="4"
+      id="txt-textarea" placeholder="z.B. Zahnarzt Freitag um 10:30 Uhr, Dr. Müller&#10;Team-Meeting Donnerstag 15. Mai um 14 Uhr im Konferenzraum"></textarea>
+
+    <!-- Photo -->
+    <div class="photo-zone" id="photo-zone" onclick="document.getElementById('photo-input').click()">
+      <div class="photo-zone-icon">📷</div>
+      <div class="photo-zone-text" id="txt-photo-text">Foto aufnehmen oder aus Galerie wählen<br><span style="font-size:11px;opacity:0.6;">Einladung · Ticket · Notiz · Flyer</span></div>
+      <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="onPhoto(event)">
+    </div>
+    <img id="photo-preview" class="photo-preview" alt="Vorschau">
+
+    <!-- Voice -->
+    <div class="voice-zone" id="voice-zone">
+      <button class="mic-btn" id="mic-btn" onclick="toggleVoice()">
+        <span id="mic-icon">🎙️</span>
+        <div class="mic-rings"></div>
+      </button>
+      <div class="voice-status" id="voice-status">Zum Aufnehmen tippen</div>
+      <div class="voice-transcript" id="voice-transcript"></div>
     </div>
   </div>
 
-  <!-- Voice Panel -->
-  <div class="panel" id="panel-voice" style="display:none;">
-    <div class="panel-title">Termin per Sprache eingeben</div>
-    <div class="voice-wrap">
-      <button class="mic-btn" id="mic" onclick="toggleVoice()">🎙️</button>
-      <div class="voice-hint" id="v-hint">Tippen zum Aufnehmen</div>
-      <div class="transcript" id="v-text"></div>
-    </div>
-  </div>
-
-  <!-- Loader -->
-  <div class="loader" id="loader"><div class="loader-bar"></div></div>
-
-  <!-- Main Button -->
+  <!-- CTA -->
   <button class="btn-main" id="btn-main" onclick="analyze()">
     <span>✨</span> Termine mit KI erkennen
   </button>
 
+  <!-- Loader -->
+  <div class="loader" id="loader"></div>
+
+  <!-- Empty -->
+  <div class="empty" id="empty">
+    <div class="empty-icon">🔍</div>
+    <div class="empty-text">Noch keine Termine erkannt.<br>Beschreibe einen Termin oben.</div>
+  </div>
+
   <!-- Results -->
-  <div class="results" id="results" style="display:none;">
-    <div class="res-header">
-      <div class="res-title">📋 Erkannte Termine</div>
-      <div class="count" id="count">0</div>
+  <div class="results" id="results">
+    <div class="results-header">
+      <div class="results-title">Erkannte Termine</div>
+      <div class="results-count" id="count">0</div>
     </div>
-    <button class="btn-all" onclick="addAll()">➕ Alle zu Google Kalender hinzufügen</button>
+    <button class="btn-all" onclick="addAll()">＋ Alle zum Kalender hinzufügen</button>
     <div id="ev-list"></div>
   </div>
 
-  <div class="empty" id="empty" style="display:none;">
-    <div class="ei">🔍</div>
-    <div>Keine Termine gefunden.<br>Versuche es mit genaueren Datum- und Uhrzeitangaben.</div>
-  </div>
 </div>
+
+<!-- Calendar Dropdown (fixed, shared) -->
+<div class="cal-dropdown-menu" id="cal-menu-shared"></div>
 
 <!-- Edit Modal -->
 <div class="overlay" id="overlay" onclick="closeModal(event)">
   <div class="modal">
-    <h3>✏️ Termin bearbeiten</h3>
-    <div class="fg"><label class="fl">Titel</label><input type="text" class="fi" id="e-title"></div>
-    <div class="fg"><label class="fl">Datum</label><input type="date" class="fi" id="e-date"></div>
-    <div class="fg"><label class="fl">Startzeit</label><input type="time" class="fi" id="e-start"></div>
-    <div class="fg"><label class="fl">Endzeit</label><input type="time" class="fi" id="e-end"></div>
-    <div class="fg"><label class="fl">Ort</label><input type="text" class="fi" id="e-loc" placeholder="optional"></div>
-    <div class="fg"><label class="fl">Beschreibung</label><input type="text" class="fi" id="e-desc" placeholder="optional"></div>
-    <div class="m-actions">
-      <button class="btn-cancel" onclick="closeModal()">Abbrechen</button>
-      <button class="btn-ok" onclick="saveEdit()">💾 Speichern</button>
+    <div class="modal-handle"></div>
+    <div class="modal-title">✏️ Termin bearbeiten</div>
+    <div class="field">
+      <label>Titel</label>
+      <input type="text" id="e-title">
     </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Datum</label>
+        <input type="date" id="e-date">
+      </div>
+      <div class="field">
+        <label>Beginn</label>
+        <input type="time" id="e-start">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Ende</label>
+        <input type="time" id="e-end">
+      </div>
+      <div class="field">
+        <label>Ort</label>
+        <input type="text" id="e-loc">
+      </div>
+    </div>
+    <div class="field">
+      <label>Beschreibung</label>
+      <textarea id="e-desc" rows="2" style="resize:none;min-height:auto;"></textarea>
+    </div>
+    <button class="btn-save-modal" onclick="saveEdit()">Änderungen speichern</button>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- Toast -->
+<div class="toast-wrap"><div class="toast" id="toast"></div></div>
 
 <script>
 const BACKEND = 'https://kalenderai-backend.onrender.com';
+// Keep backend awake
+setInterval(() => fetch(BACKEND).catch(()=>{}), 10 * 60 * 1000);
+
 let mode = 'text';
 let events = [];
 let editIdx = null;
 let photoB64 = null;
 let photoMime = 'image/jpeg';
 let isRec = false;
-let recog = null;
+let mediaRecorder = null;
+let audioChunks = [];
 let speech = '';
 
 // Theme
@@ -560,182 +932,139 @@ if (savedTheme === 'light') applyTheme('light');
 function applyTheme(t) {
   if (t === 'light') {
     document.documentElement.classList.add('light');
-    document.getElementById('theme-icon').textContent = '🌙';
-    document.getElementById('theme-label').textContent = 'Dunkel';
-    document.querySelector('meta[name=theme-color]').setAttribute('content','#f5f4f0');
+    // theme btn text handled by applyLang
   } else {
     document.documentElement.classList.remove('light');
-    document.getElementById('theme-icon').textContent = '☀️';
-    document.getElementById('theme-label').textContent = 'Hell';
-    document.querySelector('meta[name=theme-color]').setAttribute('content','#0a0a0f');
+    // theme btn text handled by applyLang
   }
 }
-
 function toggleTheme() {
   const isLight = document.documentElement.classList.contains('light');
   const next = isLight ? 'dark' : 'light';
-  localStorage.setItem('kalenderai_theme', next);
   applyTheme(next);
+  localStorage.setItem('kalenderai_theme', next);
+  document.getElementById('theme-btn').textContent = next === 'light' ? i18n.themeDark : i18n.themeLight;
 }
-
-
 
 function setMode(m) {
   mode = m;
   ['text','photo','voice'].forEach(x => {
-    document.getElementById(`panel-${x}`).style.display = x===m ? 'block' : 'none';
-    document.getElementById(`tab-${x}`).classList.toggle('active', x===m);
+    document.getElementById('tab-'+x).classList.toggle('active', x===m);
   });
+  document.getElementById('text-input').style.display = m==='text' ? 'block' : 'none';
+  document.getElementById('photo-zone').style.display = m==='photo' ? 'flex' : 'none';
+  document.getElementById('photo-preview').style.display = 'none';
+  document.getElementById('voice-zone').style.display = m==='voice' ? 'flex' : 'none';
+  const label = document.querySelector('.input-label');
+  updateInputLabel();
 }
 
 function onPhoto(e) {
-  const f = e.target.files[0]; if (!f) return;
-  photoMime = f.type || 'image/jpeg';
-  const r = new FileReader();
-  r.onload = ev => {
-    const img = document.getElementById('prev');
-    img.src = ev.target.result; img.style.display = 'block';
-    photoB64 = ev.target.result.split(',')[1];
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = r => {
+    const src = r.target.result;
+    photoB64 = src.split(',')[1];
+    photoMime = file.type || 'image/jpeg';
+    const prev = document.getElementById('photo-preview');
+    prev.src = src;
+    prev.style.display = 'block';
+    document.getElementById('photo-zone').style.display = 'none';
   };
-  r.readAsDataURL(f);
+  reader.readAsDataURL(file);
 }
-
-let mediaRecorder = null;
-let audioChunks = [];
 
 async function toggleVoice() {
-  if (isRec) {
-    mediaRecorder && mediaRecorder.stop();
-    return;
-  }
-  // Backend handles API key
-
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-      ? 'audio/webm;codecs=opus'
-      : MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
-
-    mediaRecorder = new MediaRecorder(stream, { mimeType });
-    audioChunks = [];
-
-    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
-
-    mediaRecorder.onstop = async () => {
-      stream.getTracks().forEach(t => t.stop());
-      isRec = false;
-      document.getElementById('mic').classList.remove('rec');
-      document.getElementById('mic').textContent = '🎙️';
-      document.getElementById('v-hint').textContent = '⏳ Whisper transkribiert...';
-
-      try {
-        const blob = new Blob(audioChunks, { type: mimeType });
-        const ext = mimeType.includes('mp4') ? 'mp4' : 'webm';
-        const formData = new FormData();
-        formData.append('file', blob, 'audio.' + ext);
-        formData.append('model', 'whisper-large-v3');
-        formData.append('language', 'de');
-        formData.append('response_format', 'text');
-
-        const resp = await fetch(`${BACKEND}/api/transcribe`, {
-          method: 'POST',
-          body: formData
-        });
-
-        if (!resp.ok) throw new Error(await resp.text());
-        const transcript = await resp.text();
-        speech = transcript.trim();
-        const t = document.getElementById('v-text');
-        t.style.display = 'block';
-        t.textContent = speech;
-        document.getElementById('v-hint').textContent = '✓ Transkription abgeschlossen';
-        toast('✅ Sprache erkannt!');
-      } catch(err) {
-        document.getElementById('v-hint').textContent = 'Fehler – erneut versuchen';
-        toast('❌ Whisper Fehler: ' + err.message, true);
-      }
-    };
-
-    mediaRecorder.start();
-    isRec = true;
-    document.getElementById('mic').classList.add('rec');
-    document.getElementById('mic').textContent = '⏹️';
-    document.getElementById('v-hint').textContent = '🔴 Aufnahme läuft... erneut tippen zum Stoppen';
-    const t = document.getElementById('v-text');
-    t.style.display = 'block'; t.textContent = '';
-    speech = '';
-
-  } catch(err) {
-    toast('❌ Mikrofon nicht verfügbar: ' + err.message, true);
+  if (!isRec) {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioChunks = [];
+      mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+      mediaRecorder.onstop = async () => {
+        stream.getTracks().forEach(t => t.stop());
+        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+        await transcribeAudio(blob);
+      };
+      mediaRecorder.start();
+      isRec = true;
+      document.getElementById('mic-btn').classList.add('recording');
+      document.getElementById('mic-icon').textContent = '⏹️';
+      document.getElementById('voice-status').textContent = i18n.voiceRecording;
+      document.getElementById('voice-transcript').textContent = '';
+    } catch(err) {
+      toast('❌ Mikrofon-Zugriff verweigert', true);
+    }
+  } else {
+    mediaRecorder?.stop();
+    isRec = false;
+    document.getElementById('mic-btn').classList.remove('recording');
+    document.getElementById('mic-icon').textContent = '🎙️';
+    document.getElementById('voice-status').textContent = i18n.voiceProcessing;
   }
 }
 
+async function transcribeAudio(blob) {
+  try {
+    const formData = new FormData();
+    formData.append('file', blob, 'audio.webm');
+    const resp = await fetch(`${BACKEND}/api/transcribe`, { method: 'POST', body: formData });
+    if (!resp.ok) throw new Error(await resp.text());
+    speech = await resp.text();
+    document.getElementById('voice-transcript').textContent = speech;
+    document.getElementById('voice-status').textContent = i18n.voiceDone;
+    toast(i18n.toastVoice);
+  } catch(err) {
+    toast('❌ Transkription fehlgeschlagen', true);
+    document.getElementById('voice-status').textContent = 'Zum Aufnehmen tippen';
+  }
+}
+
+const sysPrompt = `Du bist ein Assistent, der Termine aus Texten extrahiert. Antworte NUR mit einem JSON-Objekt im Format:
+{"events":[{"title":"Terminname","date":"YYYY-MM-DD","startTime":"HH:MM","endTime":"HH:MM","location":"Ort oder leer","description":"kurze Beschreibung oder leer","confidence":90}]}
+Heute ist ${new Date().toLocaleDateString('de-DE',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}.
+Wenn kein Jahr angegeben ist, nehme das nächste mögliche Datum. Confidence = Sicherheit 0-100.`;
+
 async function analyze() {
-  // Backend handles API key
-
-  const today = new Date().toLocaleDateString('de-DE', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  const todayISO = new Date().toISOString().split('T')[0];
-
-  const sysPrompt = `Du bist ein Assistent, der Termine aus Text oder Bildern extrahiert und NUR gültiges JSON zurückgibt, ohne zusätzlichen Text oder Backticks. Heutiges Datum: ${today} (${todayISO}).
-Exaktes Format:
-{"events":[{"title":"string","date":"YYYY-MM-DD","startTime":"HH:MM","endTime":"HH:MM","location":"string oder leer","description":"string oder leer","confidence":90}]}
-Regeln: Keine Uhrzeit angegeben → 09:00/10:00. Relative Datumsangaben (morgen, Freitag) → relativ zu heute berechnen. confidence 0-100.`;
-
-  let messages;
-
+  let messages = [];
   if (mode === 'text') {
-    const txt = document.getElementById('txt').value.trim();
-    if (!txt) { toast('❌ Bitte Text eingeben!', true); return; }
-    messages = [{role:'user', content:`Extrahiere alle Termine aus folgendem Text: "${txt}"`}];
+    const txt = document.getElementById('text-input').value.trim();
+    if (!txt) { toast('❌ Bitte zuerst Text eingeben', true); return; }
+    messages = [{ role: 'user', content: txt }];
   } else if (mode === 'photo') {
-    if (!photoB64) { toast('❌ Bitte zuerst ein Bild hochladen!', true); return; }
-    messages = [{
-      role:'user',
-      content: [
-        {type:'text', text:'Analysiere das Bild und extrahiere alle Termine, Verabredungen und Fristen.'},
-        {type:'image_url', image_url:{url:`data:${photoMime};base64,${photoB64}`}}
-      ]
-    }];
+    if (!photoB64) { toast('❌ Bitte zuerst ein Foto auswählen', true); return; }
+    messages = [{ role: 'user', content: [
+      { type: 'image_url', image_url: { url: `data:${photoMime};base64,${photoB64}` } },
+      { type: 'text', text: 'Extrahiere alle Termine aus diesem Bild und antworte im gewünschten JSON-Format.' }
+    ]}];
   } else {
-    const tr = document.getElementById('v-text').textContent || speech;
-    if (!tr.trim()) { toast('❌ Bitte zuerst Sprache aufnehmen!', true); return; }
-    messages = [{role:'user', content:`Extrahiere alle Termine aus dieser Sprachtranskription: "${tr}"`}];
+    if (!speech) { toast('❌ Bitte zuerst Sprache aufnehmen', true); return; }
+    messages = [{ role: 'user', content: speech }];
   }
 
   setLoading(true);
   try {
-    const model = mode === 'photo'
-      ? 'meta-llama/llama-4-scout-17b-16e-instruct'
-      : 'llama-3.3-70b-versatile';
-
     const resp = await fetch(`${BACKEND}/api/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        mode,
-        messages: [{role:'system', content: sysPrompt}, ...messages]
-      })
+      body: JSON.stringify({ mode, messages: [{ role: 'system', content: sysPrompt }, ...messages] })
     });
-
     const data = await resp.json();
-    if (data.error) throw new Error(data.error.message);
-
+    if (data.error) throw new Error(data.error.message || data.error);
     const raw = data.choices?.[0]?.message?.content || '';
     const clean = raw.replace(/```json|```/g,'').trim();
-
     let parsed;
     try { parsed = JSON.parse(clean); }
     catch {
       const m = clean.match(/\{[\s\S]*\}/);
       if (m) parsed = JSON.parse(m[0]);
-      else throw new Error('Ungültiges Antwortformat. Bitte erneut versuchen.');
+      else throw new Error('Ungültiges Antwortformat.');
     }
-
     events = parsed.events || [];
     showEvents();
   } catch(err) {
     toast('❌ ' + (err.message || 'Unbekannter Fehler'), true);
-    console.error(err);
   } finally {
     setLoading(false);
   }
@@ -745,7 +1074,7 @@ function setLoading(on) {
   document.getElementById('loader').classList.toggle('on', on);
   const b = document.getElementById('btn-main');
   b.disabled = on;
-  b.innerHTML = on ? '<span>⏳</span> KI analysiert...' : '<span>✨</span> Termine mit KI erkennen';
+  b.innerHTML = on ? `<span>⏳</span> ${i18n.analyzing}` : `<span>✨</span> ${i18n.cta}`;
 }
 
 function showEvents() {
@@ -753,34 +1082,28 @@ function showEvents() {
   const emp = document.getElementById('empty');
   const list = document.getElementById('ev-list');
   if (!events.length) {
-    res.style.display='none'; emp.style.display='block'; return;
+    res.style.display = 'none'; emp.style.display = 'block'; return;
   }
-  emp.style.display='none'; res.style.display='block';
-  document.getElementById('count').textContent = `${events.length} gefunden`;
+  emp.style.display = 'none'; res.style.display = 'block';
+  document.getElementById('count').textContent = events.length; document.querySelector('.results-title').textContent = i18n.resultsTitle;
   list.innerHTML = events.map((ev,i) => `
-    <div class="ev-card" id="ec-${i}">
+    <div class="ev-card glass" id="ec-${i}" style="animation-delay:${i*0.08}s">
       <div class="ev-top">
         <div class="ev-name">${ev.title}</div>
         <div class="ev-conf">${ev.confidence}%</div>
       </div>
-      <div class="ev-meta">
+      <div class="ev-chips">
         <div class="chip">📅 ${fmtDate(ev.date)}</div>
         <div class="chip">🕐 ${ev.startTime}${ev.endTime?' – '+ev.endTime:''}</div>
         ${ev.location?`<div class="chip">📍 ${ev.location}</div>`:''}
       </div>
-      ${ev.description?`<div style="font-size:13px;color:var(--muted);margin-bottom:10px;">${ev.description}</div>`:''}
+      ${ev.description?`<div class="ev-desc">${ev.description}</div>`:''}
       <div class="ev-actions">
-        <button class="btn-edit" onclick="openEdit(${i})">✏️ Bearbeiten</button>
-        <div class="cal-dropdown" id="dd-${i}">
+        <button class="btn-edit" onclick="openEdit(${i})">${i18n.editBtn}</button>
+        <div class="cal-dropdown">
           <button class="cal-dropdown-btn" id="cb-${i}" onclick="toggleDropdown(${i}, event)">
-            <span>📅 Zu Kalender</span><span>▲</span>
+            <span>📅 Zu Kalender</span><span style="font-size:10px;opacity:0.7;">▲</span>
           </button>
-          <div class="cal-dropdown-menu" id="ddm-${i}">
-            <button class="cal-drop-item" onclick="addToCalendar(${i},'google');closeDropdown(${i})"><span class="di">🗓</span>Google Kalender</button>
-            <button class="cal-drop-item" onclick="addToCalendar(${i},'outlook');closeDropdown(${i})"><span class="di">📘</span>Outlook</button>
-            <button class="cal-drop-item" onclick="addToCalendar(${i},'samsung');closeDropdown(${i})"><span class="di">📱</span>Samsung Kalender</button>
-            <button class="cal-drop-item" onclick="addToCalendar(${i},'ics');closeDropdown(${i})"><span class="di">📥</span>ICS-Datei</button>
-          </div>
         </div>
       </div>
     </div>`).join('');
@@ -788,216 +1111,289 @@ function showEvents() {
 
 function fmtDate(d) {
   if (!d) return '?';
-  try {
-    return new Date(d+'T12:00:00').toLocaleDateString('de-DE',{day:'numeric',month:'short',year:'numeric'});
-  } catch { return d; }
+  try { return new Date(d+'T12:00:00').toLocaleDateString('de-DE',{day:'numeric',month:'short',year:'numeric'}); }
+  catch { return d; }
 }
 
-// ── Calendar URLs ──────────────────────────────────────────────────────────
-// ── Dropdown calendar ────────────────────────────────────────────────────────
+// ── Dropdown ─────────────────────────────────────────────────────────────────
+let activeDropdownIdx = null;
+
+const sharedMenu = document.getElementById('cal-menu-shared');
+sharedMenu.innerHTML = `
+  <button class="cal-drop-item" onclick="handleCalChoice('google')"><span class="di">🗓</span>Google Kalender</button>
+  <button class="cal-drop-item" onclick="handleCalChoice('outlook')"><span class="di">📘</span>Outlook</button>
+  <button class="cal-drop-item" onclick="handleCalChoice('samsung')"><span class="di">📱</span>Samsung Kalender</button>
+  <button class="cal-drop-item" onclick="handleCalChoice('ics')"><span class="di">📥</span>ICS-Datei</button>
+`;
+
 function toggleDropdown(i, e) {
   e.stopPropagation();
-  const menu = document.getElementById('ddm-' + i);
-  const isOpen = menu.classList.contains('open');
-  closeAllDropdowns();
-  if (!isOpen) {
-    // Position below the button
-    const btn = e.currentTarget;
-    const rect = btn.getBoundingClientRect();
-    menu.style.display = 'block';
-    const menuH = menu.offsetHeight;
-    const spaceBelow = window.innerHeight - rect.bottom;
-    if (spaceBelow >= menuH + 8) {
-      menu.style.top = (rect.bottom + 6) + 'px';
-    } else {
-      menu.style.top = (rect.top - menuH - 6) + 'px';
-    }
-    menu.style.left = Math.max(8, rect.right - menu.offsetWidth) + 'px';
-    menu.style.display = '';
-    menu.classList.add('open');
+  if (activeDropdownIdx === i) {
+    closeAllDropdowns(); return;
   }
-}
-
-function closeDropdown(i) {
-  const menu = document.getElementById('ddm-' + i);
-  if (menu) menu.classList.remove('open');
+  closeAllDropdowns();
+  activeDropdownIdx = i;
+  const btn = document.getElementById('cb-' + i);
+  const rect = btn.getBoundingClientRect();
+  sharedMenu.style.display = 'block';
+  const menuH = sharedMenu.offsetHeight;
+  const spaceBelow = window.innerHeight - rect.bottom;
+  if (spaceBelow >= menuH + 8) {
+    sharedMenu.style.top = (rect.bottom + 6) + 'px';
+  } else {
+    sharedMenu.style.top = (rect.top - menuH - 6) + 'px';
+  }
+  sharedMenu.style.left = Math.max(8, rect.right - sharedMenu.offsetWidth) + 'px';
+  sharedMenu.style.display = '';
+  sharedMenu.classList.add('open');
 }
 
 function closeAllDropdowns() {
-  document.querySelectorAll('.cal-dropdown-menu').forEach(m => m.classList.remove('open'));
+  sharedMenu.classList.remove('open');
+  activeDropdownIdx = null;
 }
-
 document.addEventListener('click', closeAllDropdowns);
 
+function handleCalChoice(type) {
+  closeAllDropdowns();
+  if (activeDropdownIdx !== null) {
+    addToCalendar(activeDropdownIdx, type);
+  }
+}
+
+// ── Calendar URLs ─────────────────────────────────────────────────────────────
 function buildGoogleURL(ev) {
   const ds = (ev.date||'').replace(/-/g,'');
   const s = (ev.startTime||'09:00').replace(':','')+'00';
   const e = (ev.endTime||'10:00').replace(':','')+'00';
-  const p = new URLSearchParams({
-    action:'TEMPLATE', text:ev.title||'Termin',
-    dates:`${ds}T${s}/${ds}T${e}`,
-    location:ev.location||'', details:ev.description||''
-  });
+  const p = new URLSearchParams({ action:'TEMPLATE', text:ev.title||'Termin',
+    dates:`${ds}T${s}/${ds}T${e}`, location:ev.location||'', details:ev.description||'' });
   return `https://calendar.google.com/calendar/render?${p}`;
 }
-
 function buildOutlookURL(ev) {
-  const p = new URLSearchParams({
-    path:'/calendar/action/compose', rru:'addevent',
-    subject:ev.title||'Termin',
-    startdt:`${ev.date}T${ev.startTime||'09:00'}:00`,
-    enddt:`${ev.date}T${ev.endTime||'10:00'}:00`,
-    location:ev.location||'', body:ev.description||''
-  });
+  const p = new URLSearchParams({ path:'/calendar/action/compose', rru:'addevent',
+    subject:ev.title||'Termin', startdt:`${ev.date}T${ev.startTime||'09:00'}:00`,
+    enddt:`${ev.date}T${ev.endTime||'10:00'}:00`, location:ev.location||'', body:ev.description||'' });
   return `https://outlook.live.com/calendar/0/deeplink/compose?${p}`;
 }
-
 function buildICS(ev) {
   const ds = (ev.date||'').replace(/-/g,'');
   const s = (ev.startTime||'09:00').replace(':','')+'00';
   const e = (ev.endTime||'10:00').replace(':','')+'00';
-  const ics = [
-    'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//KalenderAI//DE',
-    'BEGIN:VEVENT',
-    `DTSTART:${ds}T${s}`,
-    `DTEND:${ds}T${e}`,
-    `SUMMARY:${ev.title||'Termin'}`,
-    `LOCATION:${ev.location||''}`,
-    `DESCRIPTION:${ev.description||''}`,
-    'END:VEVENT','END:VCALENDAR'
-  ].join('\r\n');
-  const blob = new Blob([ics], {type:'text/calendar'});
-  return URL.createObjectURL(blob);
-}
-
-// ── Calendar Picker ─────────────────────────────────────────────────────────
-let pickerIdx = null;
-
-const calMeta = {
-  google:  { icon:'🗓',  name:'Google Kalender' },
-  outlook: { icon:'📘', name:'Outlook' },
-  samsung: { icon:'📱', name:'Samsung Kalender' },
-  ics:     { icon:'📥', name:'ICS-Datei' }
-};
-
-function openCalPicker(i) {
-  pickerIdx = i;
-  document.getElementById('cal-picker').classList.add('open');
-}
-
-function closeCalPicker(e) {
-  if (!e || e.target===document.getElementById('cal-picker'))
-    document.getElementById('cal-picker').classList.remove('open');
-}
-
-function pickCalendar(type) {
-  document.getElementById('cal-picker').classList.remove('open');
-  if (pickerIdx !== null) addToCalendar(pickerIdx, type);
-}
-
-function pickCalendarAlways(type) {
-  document.getElementById('cal-picker').classList.remove('open');
-  localStorage.setItem('kalenderai_cal', type);
-  updateCalPref(type);
-  if (pickerIdx !== null) addToCalendar(pickerIdx, type);
-}
-
-function updateCalPref(type) {
-  const meta = calMeta[type];
-  document.getElementById('cal-pref').style.display = 'flex';
-  document.getElementById('cal-pref-icon').textContent = meta.icon;
-  document.getElementById('cal-pref-name').textContent = meta.name;
-}
-
-function resetCalPref() {
-  localStorage.removeItem('kalenderai_cal');
-  document.getElementById('cal-pref').style.display = 'none';
+  const ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//KalenderAI//DE',
+    'BEGIN:VEVENT',`DTSTART:${ds}T${s}`,`DTEND:${ds}T${e}`,
+    `SUMMARY:${ev.title||'Termin'}`,`LOCATION:${ev.location||''}`,
+    `DESCRIPTION:${ev.description||''}`, 'END:VEVENT','END:VCALENDAR'].join('\r\n');
+  return URL.createObjectURL(new Blob([ics], {type:'text/calendar'}));
 }
 
 function addToCalendar(i, type) {
   const ev = events[i];
-  const b = document.getElementById(`cb-${i}`);
-
   if (type === 'google') {
     window.open(buildGoogleURL(ev), '_blank');
-    toast('🗓 Google Kalender geöffnet — Termin bestätigen!');
+    toast(i18n.toastCalendar);
   } else if (type === 'outlook') {
     window.open(buildOutlookURL(ev), '_blank');
-    toast('📘 Outlook geöffnet — Termin bestätigen!');
-  } else if (type === 'samsung') {
-    // Samsung: ICS file — Android opens it automatically with Samsung Calendar
-    const url = buildICS(ev);
+    toast(i18n.toastOutlook);
+  } else {
     const a = document.createElement('a');
-    a.href = url; a.download = `${ev.title||'termin'}.ics`;
+    a.href = buildICS(ev);
+    a.download = `${ev.title||'termin'}.ics`;
     a.click();
-    toast('📱 Datei geöffnet — Samsung Kalender wird gestartet!');
-  } else if (type === 'ics') {
-    const url = buildICS(ev);
-    const a = document.createElement('a');
-    a.href = url; a.download = `${ev.title||'termin'}.ics`;
-    a.click();
-    toast('📥 ICS-Datei heruntergeladen!');
+    toast(type==='samsung' ? i18n.toastSamsung : i18n.toastICS);
   }
-
-  localStorage.setItem('kalenderai_last_cal', type);
-  const btn = document.getElementById(`cb-${i}`);
-  if (btn) { btn.classList.add('done'); btn.innerHTML = '✅ Gespeichert! ▲'; }
+  const btn = document.getElementById('cb-' + i);
+  if (btn) { btn.classList.add('done'); btn.innerHTML = i18n.savedBtn + ' <span style="font-size:10px;opacity:0.7;">▲</span>'; }
 }
 
 function addAll() {
-  pickerIdx = -1;
-  document.getElementById('cal-picker').classList.add('open');
+  if (!events.length) return;
+  // Show dropdown anchored to the addAll button
+  const btn = document.querySelector('.btn-all');
+  if (!btn) return;
+  activeDropdownIdx = -1; // signal for addAll
+  const rect = btn.getBoundingClientRect();
+  sharedMenu.style.display = 'block';
+  const menuH = sharedMenu.offsetHeight;
+  sharedMenu.style.top = (rect.top - menuH - 6) + 'px';
+  sharedMenu.style.left = Math.max(8, rect.right - sharedMenu.offsetWidth) + 'px';
+  sharedMenu.style.display = '';
+  sharedMenu.classList.add('open');
 }
 
-// Init calendar preference display
-const _savedCal = localStorage.getItem('kalenderai_cal');
-if (_savedCal) updateCalPref(_savedCal);
+// Override handleCalChoice for addAll
+const _origHandle = handleCalChoice;
+function handleCalChoice(type) {
+  const idx = activeDropdownIdx;
+  closeAllDropdowns();
+  if (idx === -1) {
+    events.forEach((_,i) => setTimeout(() => addToCalendar(i, type), i*400));
+    toast(i18n.toastAllSaved(events.length));
+  } else if (idx !== null) {
+    addToCalendar(idx, type);
+  }
+}
 
+// ── Edit modal ────────────────────────────────────────────────────────────────
 function openEdit(i) {
-  editIdx=i; const ev=events[i];
-  document.getElementById('e-title').value=ev.title||'';
-  document.getElementById('e-date').value=ev.date||'';
-  document.getElementById('e-start').value=ev.startTime||'';
-  document.getElementById('e-end').value=ev.endTime||'';
-  document.getElementById('e-loc').value=ev.location||'';
-  document.getElementById('e-desc').value=ev.description||'';
+  editIdx = i; const ev = events[i];
+  document.getElementById('e-title').value = ev.title||'';
+  document.getElementById('e-date').value = ev.date||'';
+  document.getElementById('e-start').value = ev.startTime||'';
+  document.getElementById('e-end').value = ev.endTime||'';
+  document.getElementById('e-loc').value = ev.location||'';
+  document.getElementById('e-desc').value = ev.description||'';
   document.getElementById('overlay').classList.add('open');
 }
-
 function closeModal(e) {
   if (!e || e.target===document.getElementById('overlay'))
     document.getElementById('overlay').classList.remove('open');
 }
-
 function saveEdit() {
   if (editIdx===null) return;
-  events[editIdx]={
+  events[editIdx] = {
     ...events[editIdx],
-    title:document.getElementById('e-title').value,
-    date:document.getElementById('e-date').value,
-    startTime:document.getElementById('e-start').value,
-    endTime:document.getElementById('e-end').value,
-    location:document.getElementById('e-loc').value,
-    description:document.getElementById('e-desc').value,
+    title: document.getElementById('e-title').value,
+    date: document.getElementById('e-date').value,
+    startTime: document.getElementById('e-start').value,
+    endTime: document.getElementById('e-end').value,
+    location: document.getElementById('e-loc').value,
+    description: document.getElementById('e-desc').value,
   };
-  closeModal(); showEvents(); toast('✅ Termin aktualisiert!');
+  document.getElementById('overlay').classList.remove('open');
+  showEvents();
+  toast(i18n.toastUpdated);
 }
 
-function toast(msg, isErr=false) {
-  const t=document.getElementById('toast');
-  t.textContent=msg;
-  t.className='toast'+(isErr?' err':'');
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3200);
+// ── Toast ─────────────────────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg, err=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (err?' err':'');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-// Register Service Worker
+// ── i18n ─────────────────────────────────────────────────────────────────────
+const langs = {
+  de: {
+    status: 'Kostenlos & ohne Anmeldung — bereit',
+    themeLight: '☀️ Hell', themeDark: '🌙 Dunkel',
+    langBtn: '🌐 EN',
+    tabText: 'Text', tabPhoto: 'Foto', tabVoice: 'Sprache',
+    inputLabelText: 'Termin beschreiben',
+    inputLabelPhoto: 'Foto hochladen',
+    inputLabelVoice: 'Termin ansagen',
+    textPlaceholder: 'z.B. Zahnarzt Freitag um 10:30 Uhr, Dr. Müller\nTeam-Meeting Donnerstag 15. Mai um 14 Uhr im Konferenzraum',
+    photoText: 'Foto aufnehmen oder aus Galerie wählen<br><span style="font-size:11px;opacity:0.6;">Einladung · Ticket · Notiz · Flyer</span>',
+    voiceIdle: 'Zum Aufnehmen tippen',
+    voiceRecording: 'Aufnahme läuft... Tippen zum Stoppen',
+    voiceProcessing: 'Wird verarbeitet...',
+    voiceDone: 'Transkription abgeschlossen ✓',
+    cta: 'Termine mit KI erkennen',
+    analyzing: 'KI analysiert...',
+    resultsTitle: 'Erkannte Termine',
+    addAll: '＋ Alle zum Kalender hinzufügen',
+    editBtn: '✏️ Bearbeiten',
+    modalTitle: '✏️ Termin bearbeiten',
+    labelTitle: 'Titel', labelDate: 'Datum', labelStart: 'Beginn',
+    labelEnd: 'Ende', labelLoc: 'Ort', labelDesc: 'Beschreibung',
+    saveBtn: 'Änderungen speichern',
+    emptyText: 'Noch keine Termine erkannt.<br>Beschreibe einen Termin oben.',
+    toastCalendar: '🗓 Google Kalender geöffnet!',
+    toastOutlook: '📘 Outlook geöffnet!',
+    toastSamsung: '📱 Samsung Kalender wird geöffnet!',
+    toastICS: '📥 ICS-Datei heruntergeladen!',
+    toastUpdated: '✅ Termin aktualisiert!',
+    toastVoice: '🎙️ Sprache erkannt!',
+    toastAllSaved: (n,t) => `🗓 ${n} Termine werden gespeichert!`,
+    savedBtn: '✅ Gespeichert!',
+  },
+  en: {
+    status: 'Free & no login required — ready',
+    themeLight: '☀️ Light', themeDark: '🌙 Dark',
+    langBtn: '🌐 DE',
+    tabText: 'Text', tabPhoto: 'Photo', tabVoice: 'Voice',
+    inputLabelText: 'Describe your appointment',
+    inputLabelPhoto: 'Upload a photo',
+    inputLabelVoice: 'Say your appointment',
+    textPlaceholder: 'e.g. Dentist Friday at 10:30am, Dr. Miller\nTeam meeting Thursday May 15 at 2pm in the conference room',
+    photoText: 'Take a photo or choose from gallery<br><span style="font-size:11px;opacity:0.6;">Invitation · Ticket · Note · Flyer</span>',
+    voiceIdle: 'Tap to start recording',
+    voiceRecording: 'Recording... Tap to stop',
+    voiceProcessing: 'Processing...',
+    voiceDone: 'Transcription complete ✓',
+    cta: 'Detect appointments with AI',
+    analyzing: 'AI is analyzing...',
+    resultsTitle: 'Detected Appointments',
+    addAll: '＋ Add all to calendar',
+    editBtn: '✏️ Edit',
+    modalTitle: '✏️ Edit appointment',
+    labelTitle: 'Title', labelDate: 'Date', labelStart: 'Start',
+    labelEnd: 'End', labelLoc: 'Location', labelDesc: 'Description',
+    saveBtn: 'Save changes',
+    emptyText: 'No appointments detected yet.<br>Describe an appointment above.',
+    toastCalendar: '🗓 Google Calendar opened!',
+    toastOutlook: '📘 Outlook opened!',
+    toastSamsung: '📱 Samsung Calendar opening!',
+    toastICS: '📥 ICS file downloaded!',
+    toastUpdated: '✅ Appointment updated!',
+    toastVoice: '🎙️ Voice recognized!',
+    toastAllSaved: (n,t) => `🗓 Saving ${n} appointments!`,
+    savedBtn: '✅ Saved!',
+  }
+};
+
+let lang = localStorage.getItem('kalenderai_lang') || 'de';
+let i18n = langs[lang];
+
+function applyLang() {
+  i18n = langs[lang];
+  document.getElementById('txt-status').textContent = i18n.status;
+  document.getElementById('lang-btn').textContent = i18n.langBtn;
+  document.getElementById('theme-btn').textContent =
+    document.documentElement.classList.contains('light') ? i18n.themeDark : i18n.themeLight;
+  document.getElementById('tab-text').innerHTML = `<span class="tab-icon">✏️</span>${i18n.tabText}`;
+  document.getElementById('tab-photo').innerHTML = `<span class="tab-icon">📷</span>${i18n.tabPhoto}`;
+  document.getElementById('tab-voice').innerHTML = `<span class="tab-icon">🎙️</span>${i18n.tabVoice}`;
+  document.getElementById('txt-photo-text').innerHTML = i18n.photoText;
+  document.querySelector('.btn-main').innerHTML = `<span>✨</span> ${i18n.cta}`;
+  document.querySelector('.btn-all').textContent = i18n.addAll;
+  document.querySelector('.empty-text').innerHTML = i18n.emptyText;
+  document.querySelector('.modal-title').textContent = i18n.modalTitle;
+  document.querySelector('[for="e-title"], label[for="e-title"]');
+  // Update modal labels
+  const labels = document.querySelectorAll('.field label');
+  const lkeys = ['labelTitle','labelDate','labelStart','labelEnd','labelLoc','labelDesc'];
+  labels.forEach((l,idx) => { if(lkeys[idx]) l.textContent = i18n[lkeys[idx]]; });
+  document.querySelector('.btn-save-modal').textContent = i18n.saveBtn;
+  // Update input label and placeholder based on current mode
+  updateInputLabel();
+  // Re-render events if any
+  if (events.length) showEvents();
+}
+
+function updateInputLabel() {
+  const labelMap = { text: i18n.inputLabelText, photo: i18n.inputLabelPhoto, voice: i18n.inputLabelVoice };
+  document.getElementById('txt-input-label').textContent = labelMap[mode] || i18n.inputLabelText;
+  if (mode === 'text') {
+    document.getElementById('text-input').placeholder = i18n.textPlaceholder.replace(/\\n/g,'\n');
+  }
+}
+
+function toggleLang() {
+  lang = lang === 'de' ? 'en' : 'de';
+  localStorage.setItem('kalenderai_lang', lang);
+  applyLang();
+}
+
+// Init language
+applyLang();
+
+// Service Worker
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/KalenderAI/sw.js')
-      .then(() => console.log('SW registered'))
-      .catch(e => console.log('SW error:', e));
-  });
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
 }
 </script>
 </body>
