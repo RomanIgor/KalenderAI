@@ -168,6 +168,53 @@ body {
 :root.light #theme-dark.active { box-shadow: 0 2px 12px rgba(109,40,217,0.25); }
 :root.light #theme-light.active { box-shadow: 0 2px 12px rgba(245,158,11,0.25); }
 
+/* ── AddAll picker ── */
+.addall-picker {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  z-index: 200;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+.addall-picker.open { display: flex; }
+.addall-sheet {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 24px 24px 0 0;
+  padding: 20px 16px 40px;
+  width: 100%;
+  max-width: 480px;
+  animation: modalUp 0.3s cubic-bezier(0.16,1,0.3,1) both;
+}
+.addall-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: var(--muted);
+  font-family: var(--mono);
+  text-align: center;
+  margin-bottom: 14px;
+}
+.addall-btns { display: flex; flex-direction: column; gap: 8px; }
+.addall-cancel {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.addall-cancel:hover { color: var(--text); }
+
 /* ── Animated background ── */
 .bg-canvas {
   position: fixed;
@@ -1007,6 +1054,24 @@ textarea::placeholder { color: var(--muted2); }
 <!-- Calendar Dropdown (fixed, shared) -->
 <div class="cal-dropdown-menu" id="cal-menu-shared"></div>
 
+<!-- AddAll Picker -->
+<div class="addall-picker" id="addall-picker" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="addall-sheet">
+    <div class="addall-title" id="txt-addall-title">ALLE TERMINE HINZUFÜGEN</div>
+    <div class="addall-btns">
+      <button class="cal-pill-btn cal-google" onclick="addAllChoose('google')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Google Calendar
+      </button>
+      <button class="cal-pill-btn cal-ics" onclick="addAllChoose('ics')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        ICS / Andere
+      </button>
+    </div>
+    <button class="addall-cancel" onclick="document.getElementById('addall-picker').classList.remove('open')">Abbrechen</button>
+  </div>
+</div>
+
 <!-- Edit Modal -->
 <div class="overlay" id="overlay" onclick="closeModal(event)">
   <div class="modal">
@@ -1346,22 +1411,14 @@ function addToCalendar(i, type) {
 
 function addAll() {
   if (!events.length) return;
-  const btn = document.querySelector('.btn-all');
-  if (!btn) return;
-  activeDropdownIdx = -1;
-  const rect = btn.getBoundingClientRect();
-  // Position menu above the button, centered
-  sharedMenu.style.display = 'block';
-  sharedMenu.style.visibility = 'hidden';
-  sharedMenu.classList.add('open');
-  const menuH = sharedMenu.offsetHeight;
-  const menuW = sharedMenu.offsetWidth;
-  const top = rect.top - menuH - 8;
-  const left = Math.min(Math.max(8, rect.left + rect.width/2 - menuW/2), window.innerWidth - menuW - 8);
-  sharedMenu.style.top = top + 'px';
-  sharedMenu.style.left = left + 'px';
-  sharedMenu.style.visibility = 'visible';
-  sharedMenu.style.display = '';
+  // Show inline picker overlay instead of dropdown
+  document.getElementById('addall-picker').classList.add('open');
+}
+
+function addAllChoose(type) {
+  document.getElementById('addall-picker').classList.remove('open');
+  events.forEach((_,i) => setTimeout(() => addToCalendar(i, type), i*500));
+  toast(i18n.toastAllSaved(events.length));
 }
 
 // Override handleCalChoice for addAll
@@ -1450,6 +1507,7 @@ const langs = {
     toastUpdated: '✅ Termin aktualisiert!',
     toastVoice: '🎙️ Sprache erkannt!',
     calTitle: 'KALENDER WÄHLEN',
+    addallTitle: 'ALLE TERMINE HINZUFÜGEN',
     toastAllSaved: (n,t) => `🗓 ${n} Termine werden gespeichert!`,
     savedBtn: '✅ Gespeichert!',
   },
@@ -1483,6 +1541,7 @@ const langs = {
     toastUpdated: '✅ Appointment updated!',
     toastVoice: '🎙️ Voice recognized!',
     calTitle: 'ADD TO CALENDAR',
+    addallTitle: 'ADD ALL APPOINTMENTS',
     toastAllSaved: (n,t) => `🗓 Saving ${n} appointments!`,
     savedBtn: '✅ Saved!',
   }
@@ -1544,6 +1603,7 @@ function applyLang() {
   document.getElementById('txt-photo-text').innerHTML = i18n.photoText;
   document.querySelector('.btn-main').innerHTML = `<span>✨</span> ${i18n.cta}`;
   const btnAll = document.querySelector('.btn-all'); if (btnAll) btnAll.textContent = i18n.addAll;
+  const addallTitle = document.getElementById('txt-addall-title'); if (addallTitle) addallTitle.textContent = i18n.addallTitle || 'ALLE TERMINE';
   document.querySelector('.empty-text').innerHTML = i18n.emptyText;
   document.querySelector('.modal-title').textContent = i18n.modalTitle;
   document.querySelector('[for="e-title"], label[for="e-title"]');
