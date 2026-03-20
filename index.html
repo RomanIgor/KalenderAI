@@ -1252,17 +1252,20 @@ function fmtDate(d) {
 let activeDropdownIdx = null;
 
 const sharedMenu = document.getElementById('cal-menu-shared');
-sharedMenu.innerHTML = `
-  <div style="padding:6px 8px 4px;font-size:10px;font-weight:700;letter-spacing:1px;color:var(--muted);font-family:var(--mono);">${i18n.calTitle || 'KALENDER'}</div>
-  <button class="cal-pill-btn cal-google" onclick="handleCalChoice('google')">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-    Google Calendar
-  </button>
-  <button class="cal-pill-btn cal-ics" onclick="handleCalChoice('ics')">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-    ICS / Andere
-  </button>
-`;
+
+function buildCalMenu() {
+  sharedMenu.innerHTML = `
+    <div style="padding:6px 8px 4px;font-size:10px;font-weight:700;letter-spacing:1px;color:var(--muted);font-family:var(--mono);">${i18n.calTitle || 'KALENDER'}</div>
+    <button class="cal-pill-btn cal-google" onclick="handleCalChoice('google')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Google Calendar
+    </button>
+    <button class="cal-pill-btn cal-ics" onclick="handleCalChoice('ics')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      ICS / Andere
+    </button>
+  `;
+}
 
 function toggleDropdown(i, e) {
   e.stopPropagation();
@@ -1567,13 +1570,14 @@ function setLang(l) {
   document.getElementById('lang-de').classList.toggle('active', lang === 'de');
   document.getElementById('lang-en').classList.toggle('active', lang === 'en');
   applyLang();
-  // Re-analyze if results already shown
+  buildCalMenu();
   if (events.length > 0) {
     analyze();
   }
 }
 
 // Init language & theme toggles
+buildCalMenu();
 document.getElementById('lang-de').classList.toggle('active', lang === 'de');
 document.getElementById('lang-en').classList.toggle('active', lang === 'en');
 const _t = localStorage.getItem('kalenderai_theme') || 'dark';
