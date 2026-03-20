@@ -168,53 +168,6 @@ body {
 :root.light #theme-dark.active { box-shadow: 0 2px 12px rgba(109,40,217,0.25); }
 :root.light #theme-light.active { box-shadow: 0 2px 12px rgba(245,158,11,0.25); }
 
-/* ── AddAll picker ── */
-.addall-picker {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(8px);
-  z-index: 200;
-  display: none;
-  align-items: flex-end;
-  justify-content: center;
-}
-.addall-picker.open { display: flex; }
-.addall-sheet {
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  border-radius: 24px 24px 0 0;
-  padding: 20px 16px 40px;
-  width: 100%;
-  max-width: 480px;
-  animation: modalUp 0.3s cubic-bezier(0.16,1,0.3,1) both;
-}
-.addall-title {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  color: var(--muted);
-  font-family: var(--mono);
-  text-align: center;
-  margin-bottom: 14px;
-}
-.addall-btns { display: flex; flex-direction: column; gap: 8px; }
-.addall-cancel {
-  width: 100%;
-  margin-top: 8px;
-  padding: 12px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 100px;
-  color: var(--muted);
-  font-family: var(--font);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.addall-cancel:hover { color: var(--text); }
-
 /* ── Animated background ── */
 .bg-canvas {
   position: fixed;
@@ -610,28 +563,7 @@ textarea::placeholder { color: var(--muted2); }
   font-family: var(--mono);
 }
 
-.btn-all {
-  width: 100%;
-  padding: 13px;
-  background: var(--surface);
-  backdrop-filter: var(--blur);
-  border: 1px solid var(--border2);
-  border-radius: var(--radius-sm);
-  color: var(--accent2);
-  font-family: var(--font);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-bottom: 12px;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  transition: all 0.2s;
-  letter-spacing: 0.3px;
-}
-.btn-all:hover {
-  background: var(--surface2);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 20px var(--accentGlow);
-}
+
 
 /* ── Event cards ── */
 .ev-card {
@@ -1045,7 +977,6 @@ textarea::placeholder { color: var(--muted2); }
       <div class="results-title">Erkannte Termine</div>
       <div class="results-count" id="count">0</div>
     </div>
-    <button class="btn-all" onclick="addAll(); event.stopPropagation();">＋ Alle zum Kalender hinzufügen</button>
     <div id="ev-list"></div>
   </div>
 
@@ -1053,24 +984,6 @@ textarea::placeholder { color: var(--muted2); }
 
 <!-- Calendar Dropdown (fixed, shared) -->
 <div class="cal-dropdown-menu" id="cal-menu-shared"></div>
-
-<!-- AddAll Picker -->
-<div class="addall-picker" id="addall-picker" onclick="if(event.target===this)this.classList.remove('open')">
-  <div class="addall-sheet">
-    <div class="addall-title" id="txt-addall-title">ALLE TERMINE HINZUFÜGEN</div>
-    <div class="addall-btns">
-      <button class="cal-pill-btn cal-google" onclick="addAllChoose('google')">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        Google Calendar
-      </button>
-      <button class="cal-pill-btn cal-ics" onclick="addAllChoose('ics')">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        ICS / Andere
-      </button>
-    </div>
-    <button class="addall-cancel" onclick="document.getElementById('addall-picker').classList.remove('open')">Abbrechen</button>
-  </div>
-</div>
 
 <!-- Edit Modal -->
 <div class="overlay" id="overlay" onclick="closeModal(event)">
@@ -1409,38 +1322,9 @@ function addToCalendar(i, type) {
   if (btn) { btn.classList.add('done'); btn.innerHTML = i18n.savedBtn + ' <span style="font-size:10px;opacity:0.7;">▲</span>'; }
 }
 
-function addAll() {
-  if (!events.length) return;
-  // Show inline picker overlay instead of dropdown
-  document.getElementById('addall-picker').classList.add('open');
-}
 
-function addAllChoose(type) {
-  document.getElementById('addall-picker').classList.remove('open');
-  if (type === 'google') {
-    // Google blocks multiple popups — open one by one with user instruction
-    let current = 0;
-    function openNext() {
-      if (current >= events.length) {
-        toast(i18n.toastAllSaved(events.length));
-        return;
-      }
-      addToCalendar(current, 'google');
-      current++;
-      if (current < events.length) {
-        toast(`🗓 ${current}/${events.length} — ${lang === 'de' ? 'Termin bestätigen, dann weiter' : 'Confirm, then next opens'}`, false);
-        setTimeout(openNext, 2500);
-      } else {
-        toast(i18n.toastAllSaved(events.length));
-      }
-    }
-    openNext();
-  } else {
-    // ICS — download all at once with delay
-    events.forEach((_,i) => setTimeout(() => addToCalendar(i, type), i*400));
-    toast(i18n.toastAllSaved(events.length));
-  }
-}
+
+
 
 // Override handleCalChoice for addAll
 const _origHandle = handleCalChoice;
@@ -1514,7 +1398,6 @@ const langs = {
     cta: 'Termine mit KI erkennen',
     analyzing: 'KI analysiert...',
     resultsTitle: 'Erkannte Termine',
-    addAll: '＋ Alle zum Kalender hinzufügen',
     editBtn: '✏️ Bearbeiten',
     modalTitle: '✏️ Termin bearbeiten',
     labelTitle: 'Titel', labelDate: 'Datum', labelStart: 'Beginn',
@@ -1528,8 +1411,6 @@ const langs = {
     toastUpdated: '✅ Termin aktualisiert!',
     toastVoice: '🎙️ Sprache erkannt!',
     calTitle: 'KALENDER WÄHLEN',
-    addallTitle: 'ALLE TERMINE HINZUFÜGEN',
-    toastAllSaved: (n,t) => `🗓 ${n} Termine werden gespeichert!`,
     savedBtn: '✅ Gespeichert!',
   },
   en: {
@@ -1548,7 +1429,6 @@ const langs = {
     cta: 'Detect appointments with AI',
     analyzing: 'AI is analyzing...',
     resultsTitle: 'Detected Appointments',
-    addAll: '＋ Add all to calendar',
     editBtn: '✏️ Edit',
     modalTitle: '✏️ Edit appointment',
     labelTitle: 'Title', labelDate: 'Date', labelStart: 'Start',
@@ -1562,8 +1442,6 @@ const langs = {
     toastUpdated: '✅ Appointment updated!',
     toastVoice: '🎙️ Voice recognized!',
     calTitle: 'ADD TO CALENDAR',
-    addallTitle: 'ADD ALL APPOINTMENTS',
-    toastAllSaved: (n,t) => `🗓 Saving ${n} appointments!`,
     savedBtn: '✅ Saved!',
   }
 };
@@ -1623,8 +1501,6 @@ function applyLang() {
   document.getElementById('tab-voice').innerHTML = svgVoice + `<span>${i18n.tabVoice}</span>`;
   document.getElementById('txt-photo-text').innerHTML = i18n.photoText;
   document.querySelector('.btn-main').innerHTML = `<span>✨</span> ${i18n.cta}`;
-  const btnAll = document.querySelector('.btn-all'); if (btnAll) btnAll.textContent = i18n.addAll;
-  const addallTitle = document.getElementById('txt-addall-title'); if (addallTitle) addallTitle.textContent = i18n.addallTitle || 'ALLE TERMINE';
   document.querySelector('.empty-text').innerHTML = i18n.emptyText;
   document.querySelector('.modal-title').textContent = i18n.modalTitle;
   document.querySelector('[for="e-title"], label[for="e-title"]');
