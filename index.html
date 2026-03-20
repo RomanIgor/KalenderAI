@@ -1417,8 +1417,29 @@ function addAll() {
 
 function addAllChoose(type) {
   document.getElementById('addall-picker').classList.remove('open');
-  events.forEach((_,i) => setTimeout(() => addToCalendar(i, type), i*500));
-  toast(i18n.toastAllSaved(events.length));
+  if (type === 'google') {
+    // Google blocks multiple popups — open one by one with user instruction
+    let current = 0;
+    function openNext() {
+      if (current >= events.length) {
+        toast(i18n.toastAllSaved(events.length));
+        return;
+      }
+      addToCalendar(current, 'google');
+      current++;
+      if (current < events.length) {
+        toast(`🗓 ${current}/${events.length} — ${lang === 'de' ? 'Termin bestätigen, dann weiter' : 'Confirm, then next opens'}`, false);
+        setTimeout(openNext, 2500);
+      } else {
+        toast(i18n.toastAllSaved(events.length));
+      }
+    }
+    openNext();
+  } else {
+    // ICS — download all at once with delay
+    events.forEach((_,i) => setTimeout(() => addToCalendar(i, type), i*400));
+    toast(i18n.toastAllSaved(events.length));
+  }
 }
 
 // Override handleCalChoice for addAll
