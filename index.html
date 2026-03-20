@@ -1349,17 +1349,19 @@ function addAll() {
   const btn = document.querySelector('.btn-all');
   if (!btn) return;
   activeDropdownIdx = -1;
-  // Make sure menu is rendered to get height
-  sharedMenu.classList.add('open');
-  sharedMenu.style.visibility = 'hidden';
   const rect = btn.getBoundingClientRect();
+  // Position menu above the button, centered
+  sharedMenu.style.display = 'block';
+  sharedMenu.style.visibility = 'hidden';
+  sharedMenu.classList.add('open');
   const menuH = sharedMenu.offsetHeight;
   const menuW = sharedMenu.offsetWidth;
   const top = rect.top - menuH - 8;
   const left = Math.min(Math.max(8, rect.left + rect.width/2 - menuW/2), window.innerWidth - menuW - 8);
   sharedMenu.style.top = top + 'px';
   sharedMenu.style.left = left + 'px';
-  sharedMenu.style.visibility = '';
+  sharedMenu.style.visibility = 'visible';
+  sharedMenu.style.display = '';
 }
 
 // Override handleCalChoice for addAll
@@ -1571,8 +1573,14 @@ function setLang(l) {
   document.getElementById('lang-en').classList.toggle('active', lang === 'en');
   applyLang();
   buildCalMenu();
+  // Re-analyze in new language if results exist
   if (events.length > 0) {
-    analyze();
+    const hasText = document.getElementById('text-input').value.trim();
+    const hasPhoto = photoB64;
+    const hasSpeech = speech;
+    if (hasText || hasPhoto || hasSpeech) {
+      analyze();
+    }
   }
 }
 
