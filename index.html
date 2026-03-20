@@ -1166,11 +1166,33 @@ async function analyze() {
     let parsed;
     try { parsed = JSON.parse(clean); }
     catch {
+      // Try to extract JSON object
       const m = clean.match(/\{[\s\S]*\}/);
-      if (m) parsed = JSON.parse(m[0]);
-      else throw new Error('Ungültiges Antwortformat.');
+      if (m) {
+        try { parsed = JSON.parse(m[0]); }
+        catch {
+          // Try to fix common JSON issues - truncated arrays, trailing commas
+          let fixed = m[0]
+            .replace(/,\s*([}\]])/g, '$1')  // remove trailing commas
+            .replace(/([^"\\])\n/g, '$1 ')  // remove newlines in strings
+            .replace(/[\u0000-\u001F]+/g, ' '); // remove control chars
+          // If events array is truncated, close it
+          const openBrackets = (fixed.match(/\[/g)||[]).length;
+          const closeBrackets = (fixed.match(/\]/g)||[]).length;
+          const openBraces = (fixed.match(/\{/g)||[]).length;
+          const closeBraces = (fixed.match(/\}/g)||[]).length;
+          for (let i = 0; i < openBrackets - closeBrackets; i++) fixed += ']';
+          for (let i = 0; i < openBraces - closeBraces; i++) fixed += '}';
+          try { parsed = JSON.parse(fixed); }
+          catch { throw new Error(lang === 'de' ? 'Ungültiges Antwortformat. Bitte erneut versuchen.' : 'Invalid response format. Please try again.'); }
+        }
+      } else {
+        throw new Error(lang === 'de' ? 'Ungültiges Antwortformat. Bitte erneut versuchen.' : 'Invalid response format. Please try again.');
+      }
     }
-    events = parsed.events || [];
+    // Filter out invalid events
+    events = (parsed.events || []).filter(ev => ev.title && ev.date && ev.startTime);
+    if (!events.length) throw new Error(lang === 'de' ? 'Keine gültigen Termine gefunden.' : 'No valid appointments found.');
     showEvents();
   } catch(err) {
     toast('❌ ' + (err.message || 'Unbekannter Fehler'), true);
