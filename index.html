@@ -1318,7 +1318,7 @@ function showEvents() {
       ${ev.description?`<div class="ev-desc">${ev.description}</div>`:''}
       <div class="ev-actions">
         <div class="cal-export-label" id="cal-label-${i}">${i18n.exportLabel || 'IN KALENDER EXPORTIEREN'}</div>
-        <div class="cal-option-card selected" id="cal-google-${i}" onclick="toggleCalOption(${i},'google')">
+        <div class="cal-option-card selected" id="cal-google-${i}" onclick="toggleCalOption(${i},&quot;google&quot;)">
           <div class="cal-option-checkbox">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg>
           </div>
@@ -1328,7 +1328,7 @@ function showEvents() {
             <div class="cal-option-desc" id="cal-google-desc-${i}">${i18n.googleDesc || 'Direkt in deinen Kalender'}</div>
           </div>
         </div>
-        <div class="cal-option-card" id="cal-ics-${i}" onclick="toggleCalOption(${i},'ics')">
+        <div class="cal-option-card" id="cal-ics-${i}" onclick="toggleCalOption(${i},&quot;ics&quot;)">
           <div class="cal-option-checkbox">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg>
           </div>
