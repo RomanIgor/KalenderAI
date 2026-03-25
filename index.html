@@ -1406,6 +1406,28 @@ function handleCalChoice(type) {
   }
 }
 
+function toggleCalOption(i, type) {
+  const card = document.getElementById('cal-' + type + '-' + i);
+  if (card) card.classList.toggle('selected');
+}
+
+function confirmExport(i) {
+  const googleCard = document.getElementById('cal-google-' + i);
+  const icsCard = document.getElementById('cal-ics-' + i);
+  const googleSelected = googleCard && googleCard.classList.contains('selected');
+  const icsSelected = icsCard && icsCard.classList.contains('selected');
+  if (!googleSelected && !icsSelected) {
+    toast(lang === 'de' ? '⚠️ Bitte mindestens einen Kalender auswählen' : '⚠️ Please select at least one calendar', true);
+    return;
+  }
+  if (googleSelected) addToCalendar(i, 'google');
+  if (icsSelected) setTimeout(() => addToCalendar(i, 'ics'), googleSelected ? 500 : 0);
+  const btn = document.getElementById('cb-' + i);
+  const lbl = document.getElementById('cb-label-' + i);
+  if (btn) { btn.classList.add('done'); btn.disabled = true; }
+  if (lbl) lbl.textContent = lang === 'de' ? '✓ Gespeichert!' : '✓ Saved!';
+}
+
 // ── Calendar URLs ─────────────────────────────────────────────────────────────
 function buildGoogleURL(ev) {
   const ds = (ev.date||'').replace(/-/g,'');
