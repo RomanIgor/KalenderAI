@@ -1339,7 +1339,6 @@ function showEvents() {
           </div>
         </div>
         <button class="btn-confirm-export" id="cb-${i}" onclick="confirmExport(${i})">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           <span id="cb-label-${i}">${i18n.confirmExport || 'Bestätigen & exportieren'}</span>
         </button>
         <button class="btn-edit" onclick="openEdit(${i})">${i18n.editBtn}</button>
@@ -1445,8 +1444,7 @@ function addToCalendar(i, type) {
     a.click();
     toast(i18n.toastICS);
   }
-  const btn = document.getElementById('cb-' + i);
-  if (btn) { btn.classList.add('done'); btn.innerHTML = i18n.savedBtn + ' <span style="font-size:10px;opacity:0.7;">▲</span>'; }
+  // btn marking now handled by confirmExport
 }
 
 
@@ -1541,7 +1539,7 @@ const langs = {
     exportLabel: 'IN KALENDER EXPORTIEREN',
     googleDesc: 'Direkt in deinen Kalender',
     icsDesc: 'Apple, Outlook & andere',
-    confirmExport: '✓ Bestätigen & exportieren',
+    confirmExport: 'Bestätigen & exportieren',
     savedBtn: '✅ Gespeichert!',
   },
   en: {
@@ -1576,7 +1574,7 @@ const langs = {
     exportLabel: 'EXPORT TO CALENDAR',
     googleDesc: 'Directly to your calendar',
     icsDesc: 'Apple, Outlook & others',
-    confirmExport: '✓ Confirm & export',
+    confirmExport: 'Confirm & export',
     savedBtn: '✅ Saved!',
   }
 };
