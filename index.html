@@ -634,10 +634,9 @@ textarea::placeholder { color: var(--muted2); }
   font-style: italic;
 }
 
-.ev-actions { display: flex; gap: 8px; }
+.ev-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
 
 .btn-edit {
-  flex: 1;
   padding: 9px 12px;
   background: var(--surface2);
   border: 1px solid var(--border);
@@ -649,11 +648,97 @@ textarea::placeholder { color: var(--muted2); }
   cursor: pointer;
   transition: all 0.2s;
   letter-spacing: 0.2px;
+  width: 100%;
 }
 .btn-edit:hover {
   background: var(--surfaceHover);
   color: var(--text);
   border-color: var(--border2);
+}
+
+/* Calendar export section */
+.cal-export-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+  font-family: var(--mono);
+  margin-bottom: 6px;
+}
+.cal-option-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  background: var(--surface2);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 6px;
+  user-select: none;
+}
+.cal-option-card:last-of-type { margin-bottom: 0; }
+.cal-option-card:hover { border-color: var(--border2); background: var(--surfaceHover); }
+.cal-option-card.selected {
+  border-color: var(--accent);
+  background: rgba(245,80,54,0.08);
+}
+.cal-option-checkbox {
+  width: 20px; height: 20px;
+  border-radius: 6px;
+  border: 2px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  background: transparent;
+}
+.cal-option-card.selected .cal-option-checkbox {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.cal-option-checkbox svg { opacity: 0; transition: opacity 0.15s; }
+.cal-option-card.selected .cal-option-checkbox svg { opacity: 1; }
+.cal-option-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: 18px;
+}
+.cal-icon-google { background: rgba(234,67,53,0.12); }
+.cal-icon-ics { background: rgba(245,80,54,0.12); }
+.cal-option-info { flex: 1; }
+.cal-option-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.cal-option-desc { font-size: 11px; color: var(--muted); }
+
+.btn-confirm-export {
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, var(--accent), #ff8c42);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: white;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  box-shadow: 0 2px 12px var(--accentGlow);
+  margin-top: 8px;
+  letter-spacing: 0.3px;
+}
+.btn-confirm-export:hover { transform: translateY(-1px); box-shadow: 0 6px 24px var(--accentGlow); }
+.btn-confirm-export:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.btn-confirm-export.done {
+  background: linear-gradient(135deg, var(--green), #6ee7b7);
+  box-shadow: 0 2px 12px var(--greenGlow);
 }
 
 /* Dropdown */
@@ -1232,12 +1317,32 @@ function showEvents() {
       </div>
       ${ev.description?`<div class="ev-desc">${ev.description}</div>`:''}
       <div class="ev-actions">
-        <button class="btn-edit" onclick="openEdit(${i})">${i18n.editBtn}</button>
-        <div class="cal-dropdown">
-          <button class="cal-dropdown-btn" id="cb-${i}" onclick="toggleDropdown(${i}, event)">
-            <span>📅 Zu Kalender</span><span style="font-size:10px;opacity:0.7;">▲</span>
-          </button>
+        <div class="cal-export-label" id="cal-label-${i}">${i18n.exportLabel || 'IN KALENDER EXPORTIEREN'}</div>
+        <div class="cal-option-card selected" id="cal-google-${i}" onclick="toggleCalOption(${i},'google')">
+          <div class="cal-option-checkbox">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg>
+          </div>
+          <div class="cal-option-icon cal-icon-google">🗓</div>
+          <div class="cal-option-info">
+            <div class="cal-option-name">Google Calendar</div>
+            <div class="cal-option-desc" id="cal-google-desc-${i}">${i18n.googleDesc || 'Direkt in deinen Kalender'}</div>
+          </div>
         </div>
+        <div class="cal-option-card" id="cal-ics-${i}" onclick="toggleCalOption(${i},'ics')">
+          <div class="cal-option-checkbox">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg>
+          </div>
+          <div class="cal-option-icon cal-icon-ics">📥</div>
+          <div class="cal-option-info">
+            <div class="cal-option-name">ICS-Datei</div>
+            <div class="cal-option-desc" id="cal-ics-desc-${i}">${i18n.icsDesc || 'Apple, Outlook & andere'}</div>
+          </div>
+        </div>
+        <button class="btn-confirm-export" id="cb-${i}" onclick="confirmExport(${i})">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <span id="cb-label-${i}">${i18n.confirmExport || 'Bestätigen & exportieren'}</span>
+        </button>
+        <button class="btn-edit" onclick="openEdit(${i})">${i18n.editBtn}</button>
       </div>
     </div>`).join('');
 }
@@ -1433,6 +1538,10 @@ const langs = {
     toastUpdated: '✅ Termin aktualisiert!',
     toastVoice: '🎙️ Sprache erkannt!',
     calTitle: 'KALENDER WÄHLEN',
+    exportLabel: 'IN KALENDER EXPORTIEREN',
+    googleDesc: 'Direkt in deinen Kalender',
+    icsDesc: 'Apple, Outlook & andere',
+    confirmExport: '✓ Bestätigen & exportieren',
     savedBtn: '✅ Gespeichert!',
   },
   en: {
@@ -1464,6 +1573,10 @@ const langs = {
     toastUpdated: '✅ Appointment updated!',
     toastVoice: '🎙️ Voice recognized!',
     calTitle: 'ADD TO CALENDAR',
+    exportLabel: 'EXPORT TO CALENDAR',
+    googleDesc: 'Directly to your calendar',
+    icsDesc: 'Apple, Outlook & others',
+    confirmExport: '✓ Confirm & export',
     savedBtn: '✅ Saved!',
   }
 };
