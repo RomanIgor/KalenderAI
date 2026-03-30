@@ -1,8 +1,10 @@
-const CACHE = 'kalenderai-v2';
+const CACHE = 'kalenderai-v3';
 const ASSETS = [
   '/KalenderAI/',
   '/KalenderAI/index.html',
-  '/KalenderAI/manifest.json'
+  '/KalenderAI/manifest.json',
+  '/KalenderAI/css/style.css',
+  '/KalenderAI/js/app.js'
 ];
 
 self.addEventListener('install', e => {
