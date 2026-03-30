@@ -525,28 +525,32 @@ function getSysPrompt() {
     return `You are an assistant that extracts appointments from text, photos, and voice. Reply ONLY with valid JSON in this exact format:
 {"events":[{"title":"Appointment name","date":"YYYY-MM-DD","startTime":"HH:MM","endTime":"HH:MM","location":"location or empty","description":"short description or empty","confidence":90}]}
 
+IMPORTANT: If the input contains NO appointments, calendar events, or scheduling information, return EXACTLY: {"events":[]}
+Do NOT invent, guess, or fabricate appointments. Only extract what is explicitly present.
+
 Today is ${todayStr} (${todayISO}).
 Tomorrow = ${tomorrowISO}. Day after tomorrow = ${dayAfterISO}.
 - Always resolve relative dates: "tomorrow" = ${tomorrowISO}, "today" = ${todayISO}
 - If no year given, use next possible future date
 - If no end time given, add 1 hour to start time
-- If title is unclear, use a generic name like "Appointment"
 - Write ALL fields in English
 - Confidence = certainty 0-100
-- NEVER return undefined, null, or empty string for date/startTime/title`;
+- For each extracted event: NEVER use undefined, null, or empty string for date/startTime/title`;
   } else {
     return `Du bist ein Assistent, der Termine aus Texten, Fotos und Sprache extrahiert. Antworte NUR mit validem JSON in diesem Format:
 {"events":[{"title":"Terminname","date":"YYYY-MM-DD","startTime":"HH:MM","endTime":"HH:MM","location":"Ort oder leer","description":"kurze Beschreibung oder leer","confidence":90}]}
+
+WICHTIG: Wenn der Input KEINE Termine, Kalendereinträge oder Termininfos enthält, antworte NUR mit: {"events":[]}
+Erfinde, rate oder halluziniere KEINE Termine. Extrahiere nur was explizit vorhanden ist.
 
 Heute ist ${todayStr} (${todayISO}).
 Morgen = ${tomorrowISO}. Übermorgen = ${dayAfterISO}.
 - Löse relative Datumsangaben immer auf: "morgen" = ${tomorrowISO}, "heute" = ${todayISO}, "übermorgen" = ${dayAfterISO}
 - Wenn kein Jahr angegeben, nehme das nächste mögliche Datum in der Zukunft
 - Wenn keine Endzeit angegeben, addiere 1 Stunde zur Startzeit
-- Wenn der Titel unklar ist, verwende einen generischen Namen wie "Termin"
 - Schreibe ALLE Felder auf Deutsch
 - Confidence = Sicherheit 0-100
-- Gib NIEMALS undefined, null oder leere Strings für date/startTime/title zurück`;
+- Für jeden extrahierten Termin: Gib NIEMALS undefined, null oder leere Strings für date/startTime/title zurück`;
   }
 }
 let i18n = langs[lang];
