@@ -114,16 +114,16 @@ async function analyze() {
   let messages = [];
   if (mode === 'text') {
     const txt = document.getElementById('text-input').value.trim();
-    if (!txt) { toast('❌ Bitte zuerst Text eingeben', true); return; }
+    if (!txt) { toast('❌ ' + i18n.errorNoText, true); return; }
     messages = [{ role: 'user', content: txt }];
   } else if (mode === 'photo') {
-    if (!photoB64) { toast('❌ Bitte zuerst ein Foto auswählen', true); return; }
+    if (!photoB64) { toast('❌ ' + i18n.errorNoPhoto, true); return; }
     messages = [{ role: 'user', content: [
       { type: 'image_url', image_url: { url: `data:${photoMime};base64,${photoB64}` } },
       { type: 'text', text: 'Extrahiere alle Termine aus diesem Bild und antworte im gewünschten JSON-Format.' }
     ]}];
   } else {
-    if (!speech) { toast('❌ Bitte zuerst Sprache aufnehmen', true); return; }
+    if (!speech) { toast('❌ ' + i18n.errorNoVoice, true); return; }
     messages = [{ role: 'user', content: speech }];
   }
 
@@ -462,6 +462,9 @@ const langs = {
     toastICS: '📥 ICS-Datei heruntergeladen!',
     toastUpdated: '✅ Termin aktualisiert!',
     toastVoice: '🎙️ Sprache erkannt!',
+    errorNoText: 'Bitte zuerst Text eingeben',
+    errorNoPhoto: 'Bitte zuerst ein Foto auswählen',
+    errorNoVoice: 'Bitte zuerst Sprache aufnehmen',
     calTitle: 'KALENDER WÄHLEN',
     exportLabel: 'IN KALENDER EXPORTIEREN',
     googleDesc: 'Direkt in deinen Kalender',
@@ -500,6 +503,9 @@ const langs = {
     toastICS: '📥 ICS file downloaded!',
     toastUpdated: '✅ Appointment updated!',
     toastVoice: '🎙️ Voice recognized!',
+    errorNoText: 'Please enter text first',
+    errorNoPhoto: 'Please select a photo first',
+    errorNoVoice: 'Please record voice first',
     calTitle: 'ADD TO CALENDAR',
     exportLabel: 'EXPORT TO CALENDAR',
     googleDesc: 'Directly to your calendar',
