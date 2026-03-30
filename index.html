@@ -1174,6 +1174,11 @@ function onPhoto(e) {
 
 async function toggleVoice() {
   if (!isRec) {
+    if (!navigator.mediaDevices || !window.MediaRecorder) {
+      toast(lang === 'de' ? '❌ Aufnahme wird von diesem Browser nicht unterstützt' : '❌ Recording not supported in this browser', true);
+      document.getElementById('voice-status').textContent = lang === 'de' ? 'Nicht unterstützt' : 'Not supported';
+      return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       audioChunks = [];
@@ -1277,8 +1282,13 @@ async function analyze() {
     }
     // Filter out invalid events
     events = (parsed.events || []).filter(ev => ev.title && ev.date && ev.startTime);
-    if (!events.length) throw new Error(lang === 'de' ? 'Keine gültigen Termine gefunden.' : 'No valid appointments found.');
-    showEvents();
+    if (!events.length) {
+      document.querySelector('.empty-text').innerHTML = i18n.noResultsText;
+      document.getElementById('results').style.display = 'none';
+      document.getElementById('empty').style.display = 'block';
+    } else {
+      showEvents();
+    }
   } catch(err) {
     toast('❌ ' + (err.message || 'Unbekannter Fehler'), true);
   } finally {
@@ -1290,8 +1300,9 @@ function setLoading(on) {
   document.getElementById('loader').classList.toggle('on', on);
   const b = document.getElementById('btn-main');
   b.disabled = on;
-  b.innerHTML = on 
-    ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> ${i18n.analyzing}`
+  const modeMsg = mode === 'photo' ? i18n.analyzingPhoto : mode === 'voice' ? i18n.analyzingVoice : i18n.analyzing;
+  b.innerHTML = on
+    ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> ${modeMsg}`
     : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> ${i18n.cta}`;
 }
 
@@ -1308,7 +1319,7 @@ function showEvents() {
     <div class="ev-card glass" id="ec-${i}" style="animation-delay:${i*0.08}s">
       <div class="ev-top">
         <div class="ev-name">${ev.title}</div>
-        <div class="ev-conf">${ev.confidence}%</div>
+        <div class="ev-conf">${confLabel(ev.confidence || 90)}</div>
       </div>
       <div class="ev-chips">
         <div class="chip">📅 ${fmtDate(ev.date)}</div>
@@ -1348,8 +1359,14 @@ function showEvents() {
 
 function fmtDate(d) {
   if (!d) return '?';
-  try { return new Date(d+'T12:00:00').toLocaleDateString('de-DE',{day:'numeric',month:'short',year:'numeric'}); }
+  try { return new Date(d+'T12:00:00').toLocaleDateString(lang === 'en' ? 'en-US' : 'de-DE', {day:'numeric',month:'short',year:'numeric'}); }
   catch { return d; }
+}
+
+function confLabel(pct) {
+  if (pct >= 90) return lang === 'de' ? 'Sicher' : 'Certain';
+  if (pct >= 70) return lang === 'de' ? 'Wahrscheinlich' : 'Likely';
+  return lang === 'de' ? 'Prüfen' : 'Verify';
 }
 
 // ── Dropdown ─────────────────────────────────────────────────────────────────
@@ -1502,12 +1519,30 @@ function closeModal(e) {
     document.getElementById('overlay').classList.remove('open');
 }
 function saveEdit() {
-  if (editIdx===null) return;
+  if (editIdx === null) return;
+  const title = document.getElementById('e-title').value.trim();
+  const date = document.getElementById('e-date').value.trim();
+  const startTime = document.getElementById('e-start').value.trim();
+  if (!title) {
+    toast(lang === 'de' ? '❌ Titel darf nicht leer sein' : '❌ Title cannot be empty', true);
+    document.getElementById('e-title').focus();
+    return;
+  }
+  if (!date) {
+    toast(lang === 'de' ? '❌ Datum ist erforderlich' : '❌ Date is required', true);
+    document.getElementById('e-date').focus();
+    return;
+  }
+  if (!startTime) {
+    toast(lang === 'de' ? '❌ Startzeit ist erforderlich' : '❌ Start time is required', true);
+    document.getElementById('e-start').focus();
+    return;
+  }
   events[editIdx] = {
     ...events[editIdx],
-    title: document.getElementById('e-title').value,
-    date: document.getElementById('e-date').value,
-    startTime: document.getElementById('e-start').value,
+    title,
+    date,
+    startTime,
     endTime: document.getElementById('e-end').value,
     location: document.getElementById('e-loc').value,
     description: document.getElementById('e-desc').value,
@@ -1544,6 +1579,9 @@ const langs = {
     voiceDone: 'Transkription abgeschlossen ✓',
     cta: 'Termine mit KI erkennen',
     analyzing: 'KI analysiert...',
+    analyzingPhoto: 'Bild wird analysiert...',
+    analyzingVoice: 'Sprache wird analysiert...',
+    noResultsText: 'Keine Termine gefunden.<br>Versuche eine detailliertere Beschreibung.',
     resultsTitle: 'Erkannte Termine',
     editBtn: '✏️ Bearbeiten',
     modalTitle: '✏️ Termin bearbeiten',
@@ -1579,6 +1617,9 @@ const langs = {
     voiceDone: 'Transcription complete ✓',
     cta: 'Detect appointments with AI',
     analyzing: 'AI is analyzing...',
+    analyzingPhoto: 'Analyzing image...',
+    analyzingVoice: 'Analyzing voice...',
+    noResultsText: 'No appointments found.<br>Try a more detailed description.',
     resultsTitle: 'Detected Appointments',
     editBtn: '✏️ Edit',
     modalTitle: '✏️ Edit appointment',
@@ -1681,6 +1722,7 @@ function updateInputLabel() {
 function setLang(l) {
   lang = l;
   localStorage.setItem('kalenderai_lang', lang);
+  document.documentElement.lang = lang;
   document.getElementById('lang-de').classList.toggle('active', lang === 'de');
   document.getElementById('lang-en').classList.toggle('active', lang === 'en');
   applyLang();
@@ -1697,6 +1739,7 @@ function setLang(l) {
 }
 
 // Init language & theme toggles
+document.documentElement.lang = lang;
 buildCalMenu();
 document.getElementById('lang-de').classList.toggle('active', lang === 'de');
 document.getElementById('lang-en').classList.toggle('active', lang === 'en');

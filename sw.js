@@ -1,4 +1,4 @@
-const CACHE = 'kalenderai-v1';
+const CACHE = 'kalenderai-v2';
 const ASSETS = [
   '/KalenderAI/',
   '/KalenderAI/index.html',
@@ -22,6 +22,25 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  const url = new URL(e.request.url);
+
+  // Cache-first for Google Fonts (CSS + font files) — needed for offline
+  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
+    e.respondWith(
+      caches.open(CACHE).then(cache =>
+        cache.match(e.request).then(cached => {
+          if (cached) return cached;
+          return fetch(e.request).then(response => {
+            cache.put(e.request, response.clone());
+            return response;
+          });
+        })
+      ).catch(() => caches.match(e.request))
+    );
+    return;
+  }
+
+  // Network-first with cache fallback for everything else
   e.respondWith(
     fetch(e.request).catch(() => caches.match(e.request))
   );
