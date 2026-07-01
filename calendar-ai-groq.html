@@ -484,51 +484,16 @@ function setMode(m) {
   });
 }
 
-function calculateTargetDimensions(width, height, maxPixels = 2048 * 2048, maxEdge = 2048) {
-  const edgeScale = Math.min(1, maxEdge / Math.max(width, height));
-  const pixelScale = Math.min(1, Math.sqrt(maxPixels / (width * height)));
-  const scale = Math.min(edgeScale, pixelScale);
-  return {
-    width: Math.max(1, Math.round(width * scale)),
-    height: Math.max(1, Math.round(height * scale)),
-  };
-}
-
-function loadImageFile(file) {
-  return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
-    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Imaginea nu a putut fi incarcata')); };
-    img.src = url;
-  });
-}
-
-async function resizeImageFile(file) {
-  const source = await loadImageFile(file);
-  const size = calculateTargetDimensions(source.naturalWidth || source.width, source.naturalHeight || source.height);
-  const canvas = document.createElement('canvas');
-  canvas.width = size.width;
-  canvas.height = size.height;
-  const ctx = canvas.getContext('2d', { alpha: false });
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = 'high';
-  ctx.drawImage(source, 0, 0, size.width, size.height);
-  const dataUrl = canvas.toDataURL('image/jpeg', 0.86);
-  return { dataUrl, base64: dataUrl.split(',')[1], mimeType: 'image/jpeg' };
-}
-
-async function onPhoto(e) {
+function onPhoto(e) {
   const f = e.target.files[0]; if (!f) return;
-  try {
-    const resized = await resizeImageFile(f);
-    photoMime = resized.mimeType;
+  photoMime = f.type || 'image/jpeg';
+  const r = new FileReader();
+  r.onload = ev => {
     const img = document.getElementById('prev');
-    img.src = resized.dataUrl; img.style.display = 'block';
-    photoB64 = resized.base64;
-  } catch (err) {
-    toast('❌ Imaginea nu a putut fi incarcata', true);
-  }
+    img.src = ev.target.result; img.style.display = 'block';
+    photoB64 = ev.target.result.split(',')[1];
+  };
+  r.readAsDataURL(f);
 }
 
 function toggleVoice() {
