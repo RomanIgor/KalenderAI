@@ -55,7 +55,10 @@ async function onPhoto(e) {
     prev.style.display = 'block';
     document.getElementById('photo-zone').style.display = 'none';
   } catch(err) {
-    toast('❌ ' + (lang === 'de' ? 'Bild konnte nicht geladen werden' : 'Image could not be loaded'), true);
+    const msg = err?.code === 'IMAGE_FILE_TOO_LARGE'
+      ? (lang === 'de' ? 'Bild ist zu groß. Bitte eine Version unter 50 MB wählen.' : 'Image is too large. Please choose a version under 50 MB.')
+      : (lang === 'de' ? 'Bild konnte nicht geladen werden. Bitte Screenshot oder kleinere Version verwenden.' : 'Image could not be loaded. Please use a screenshot or a smaller version.');
+    toast('❌ ' + msg, true);
   }
 }
 

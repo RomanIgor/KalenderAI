@@ -1,4 +1,4 @@
-const CACHE = 'kalenderai-v5';
+const CACHE = 'kalenderai-v6';
 const ASSETS = [
   '/KalenderAI/',
   '/KalenderAI/index.html',

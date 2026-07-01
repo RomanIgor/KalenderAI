@@ -1,5 +1,10 @@
 const assert = require('assert');
-const { calculateTargetDimensions, getJpegDimensions } = require('../js/image-utils.js');
+const {
+  DEFAULT_IMAGE_OPTIONS,
+  calculateTargetDimensions,
+  getJpegDimensions,
+  validateSourceImageFile,
+} = require('../js/image-utils.js');
 
 function pixels(size) {
   return size.width * size.height;
@@ -30,5 +35,13 @@ const jpegWithSof0 = new Uint8Array([
 ]).buffer;
 
 assert.deepStrictEqual(getJpegDimensions(jpegWithSof0), { width: 8000, height: 6000 }, 'JPEG dimensions should be read from SOF marker');
+
+assert.doesNotThrow(() => {
+  validateSourceImageFile({ size: DEFAULT_IMAGE_OPTIONS.maxSourceBytes, type: 'image/jpeg' });
+}, 'images at the hard size limit should be accepted');
+
+assert.throws(() => {
+  validateSourceImageFile({ size: DEFAULT_IMAGE_OPTIONS.maxSourceBytes + 1, type: 'image/jpeg' });
+}, err => err && err.code === 'IMAGE_FILE_TOO_LARGE', 'images above the hard size limit should be rejected with a stable code');
 
 console.log('image-utils tests passed');

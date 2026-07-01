@@ -2,9 +2,24 @@
   const DEFAULT_IMAGE_OPTIONS = {
     maxPixels: 2048 * 2048,
     maxEdge: 2048,
+    maxSourceBytes: 50 * 1024 * 1024,
     quality: 0.86,
     mimeType: 'image/jpeg',
   };
+
+  function imageError(message, code) {
+    const err = new Error(message);
+    err.code = code;
+    return err;
+  }
+
+  function validateSourceImageFile(file, options) {
+    const opts = Object.assign({}, DEFAULT_IMAGE_OPTIONS, options || {});
+    if (!file) throw imageError('No image selected', 'IMAGE_FILE_MISSING');
+    if (file.size > opts.maxSourceBytes) {
+      throw imageError('Image file is too large', 'IMAGE_FILE_TOO_LARGE');
+    }
+  }
 
   function calculateTargetDimensions(width, height, options) {
     const opts = Object.assign({}, DEFAULT_IMAGE_OPTIONS, options || {});
@@ -110,6 +125,7 @@
 
   async function resizeImageFile(file, options) {
     const opts = Object.assign({}, DEFAULT_IMAGE_OPTIONS, options || {});
+    validateSourceImageFile(file, opts);
     const source = await getImageDimensions(file);
     const size = calculateTargetDimensions(source.width, source.height, opts);
     const bitmap = await createResizedBitmap(file, size);
@@ -138,6 +154,7 @@
     DEFAULT_IMAGE_OPTIONS,
     calculateTargetDimensions,
     getJpegDimensions,
+    validateSourceImageFile,
     resizeImageFile,
   };
 

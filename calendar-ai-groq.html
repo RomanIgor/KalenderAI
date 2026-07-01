@@ -494,6 +494,17 @@ function calculateTargetDimensions(width, height, maxPixels = 2048 * 2048, maxEd
   };
 }
 
+function imageError(message, code) {
+  const err = new Error(message);
+  err.code = code;
+  return err;
+}
+
+function validateSourceImageFile(file, maxSourceBytes = 50 * 1024 * 1024) {
+  if (!file) throw imageError('Nicio imagine selectata', 'IMAGE_FILE_MISSING');
+  if (file.size > maxSourceBytes) throw imageError('Imaginea este prea mare', 'IMAGE_FILE_TOO_LARGE');
+}
+
 function isJpeg(buffer) {
   const bytes = new Uint8Array(buffer, 0, Math.min(buffer.byteLength, 2));
   return bytes.length === 2 && bytes[0] === 0xff && bytes[1] === 0xd8;
@@ -556,6 +567,7 @@ async function createResizedBitmap(file, size) {
 }
 
 async function resizeImageFile(file) {
+  validateSourceImageFile(file);
   const source = await getImageDimensions(file);
   const size = calculateTargetDimensions(source.width, source.height);
   const bitmap = await createResizedBitmap(file, size);
@@ -581,7 +593,10 @@ async function onPhoto(e) {
     img.src = resized.dataUrl; img.style.display = 'block';
     photoB64 = resized.base64;
   } catch (err) {
-    toast('❌ Imaginea nu a putut fi incarcata', true);
+    const msg = err?.code === 'IMAGE_FILE_TOO_LARGE'
+      ? 'Imaginea este prea mare. Alege o versiune sub 50 MB.'
+      : 'Imaginea nu a putut fi incarcata. Foloseste un screenshot sau o versiune mai mica.';
+    toast('❌ ' + msg, true);
   }
 }
 
