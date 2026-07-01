@@ -1,9 +1,10 @@
-const CACHE = 'kalenderai-v3';
+const CACHE = 'kalenderai-v4';
 const ASSETS = [
   '/KalenderAI/',
   '/KalenderAI/index.html',
   '/KalenderAI/manifest.json',
   '/KalenderAI/css/style.css',
+  '/KalenderAI/js/image-utils.js',
   '/KalenderAI/js/app.js'
 ];
 
