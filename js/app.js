@@ -43,20 +43,20 @@ function setMode(m) {
   updateInputLabel();
 }
 
-function onPhoto(e) {
+async function onPhoto(e) {
   const file = e.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = r => {
-    const src = r.target.result;
-    photoB64 = src.split(',')[1];
-    photoMime = file.type || 'image/jpeg';
+  try {
+    const resized = await ImageUtils.resizeImageFile(file);
+    photoB64 = resized.base64;
+    photoMime = resized.mimeType;
     const prev = document.getElementById('photo-preview');
-    prev.src = src;
+    prev.src = resized.dataUrl;
     prev.style.display = 'block';
     document.getElementById('photo-zone').style.display = 'none';
-  };
-  reader.readAsDataURL(file);
+  } catch(err) {
+    toast('❌ ' + (lang === 'de' ? 'Bild konnte nicht geladen werden' : 'Image could not be loaded'), true);
+  }
 }
 
 async function toggleVoice() {
