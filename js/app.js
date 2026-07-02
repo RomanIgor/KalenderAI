@@ -474,6 +474,7 @@ const langs = {
     icsDesc: 'Apple, Outlook & andere',
     confirmExport: 'Bestätigen & exportieren',
     savedBtn: '✅ Gespeichert!',
+    privacyLink: 'Datenschutz',
   },
   en: {
     themeLight: '☀️ Light', themeDark: '🌙 Dark',
@@ -515,6 +516,7 @@ const langs = {
     icsDesc: 'Apple, Outlook & others',
     confirmExport: 'Confirm & export',
     savedBtn: '✅ Saved!',
+    privacyLink: 'Privacy',
   }
 };
 
@@ -582,6 +584,7 @@ function applyLang() {
   const lkeys = ['labelTitle','labelDate','labelStart','labelEnd','labelLoc','labelDesc'];
   labels.forEach((l,idx) => { if(lkeys[idx]) l.textContent = i18n[lkeys[idx]]; });
   document.querySelector('.btn-save-modal').textContent = i18n.saveBtn;
+  document.getElementById('privacy-link').textContent = i18n.privacyLink;
   updateInputLabel();
   if (events.length) showEvents();
 }
