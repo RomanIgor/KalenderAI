@@ -475,6 +475,7 @@ const langs = {
     confirmExport: 'Bestätigen & exportieren',
     savedBtn: '✅ Gespeichert!',
     privacyLink: 'Datenschutz',
+    privacyHref: 'datenschutz.html',
   },
   en: {
     themeLight: '☀️ Light', themeDark: '🌙 Dark',
@@ -517,6 +518,7 @@ const langs = {
     confirmExport: 'Confirm & export',
     savedBtn: '✅ Saved!',
     privacyLink: 'Privacy',
+    privacyHref: 'privacy.html',
   }
 };
 
@@ -584,7 +586,9 @@ function applyLang() {
   const lkeys = ['labelTitle','labelDate','labelStart','labelEnd','labelLoc','labelDesc'];
   labels.forEach((l,idx) => { if(lkeys[idx]) l.textContent = i18n[lkeys[idx]]; });
   document.querySelector('.btn-save-modal').textContent = i18n.saveBtn;
-  document.getElementById('privacy-link').textContent = i18n.privacyLink;
+  const privacyLink = document.getElementById('privacy-link');
+  privacyLink.textContent = i18n.privacyLink;
+  privacyLink.href = i18n.privacyHref;
   updateInputLabel();
   if (events.length) showEvents();
 }
