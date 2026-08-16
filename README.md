@@ -54,8 +54,8 @@ No login. No installation. No API key needed. Just open and use.
 
 - **Frontend:** Vanilla HTML, CSS, JavaScript — zero dependencies
 - **Backend:** Node.js on Render.com
-- **AI (Text/Voice):** Groq · `llama-3.3-70b-versatile`
-- **AI (Photos):** Groq · `meta-llama/llama-4-scout-17b-16e-instruct`
+- **AI (Text/Voice):** Groq · `openai/gpt-oss-120b`
+- **AI (Photos):** Groq · `qwen/qwen3.6-27b`
 - **Voice:** Groq Whisper · `whisper-large-v3`
 - **Hosting:** GitHub Pages (frontend) + Render.com (backend)
 
