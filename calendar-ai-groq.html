@@ -670,7 +670,7 @@ Reguli: fără oră → 09:00/10:00. Data relativă (mâine, joi) → calculeaz�
   try {
     // Use vision model for photos, fast model for text/voice
     const model = mode === 'photo'
-      ? 'qwen/qwen3.6-27b'
+      ? 'qwen/qwen3.8-27b'
       : 'openai/gpt-oss-120b';
 
     const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {

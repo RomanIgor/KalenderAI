@@ -55,7 +55,7 @@ No login. No installation. No API key needed. Just open and use.
 - **Frontend:** Vanilla HTML, CSS, JavaScript — zero dependencies
 - **Backend:** Node.js on Render.com
 - **AI (Text/Voice):** Groq · `openai/gpt-oss-120b`
-- **AI (Photos):** Groq · `qwen/qwen3.6-27b`
+- **AI (Photos):** Groq · `qwen/qwen3.8-27b`
 - **Voice:** Groq Whisper · `whisper-large-v3`
 - **Hosting:** GitHub Pages (frontend) + Render.com (backend)
 
